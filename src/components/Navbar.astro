@@ -1,0 +1,85 @@
+---
+import { siteConfig } from '../data/site';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = Astro.url.pathname } = Astro.props;
+---
+
+<header class="sticky top-0 z-40 w-full border-b border-[var(--color-border)] bg-[#0b0f14]/90 backdrop-blur-md">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <!-- Brand -->
+    <a
+      href="/"
+      class="flex items-center gap-2 font-mono text-sm sm:text-base font-bold text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors focus:outline-none"
+    >
+      <span class="w-2 h-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_8px_var(--color-accent)]"></span>
+      <span class="text-[var(--color-accent)]">FAZer0</span>
+      <span class="text-[11px] text-[var(--color-text-dim)] hidden sm:inline font-normal">/ cybersecurity</span>
+    </a>
+
+    <!-- Navigation Links -->
+    <nav class="hidden md:flex items-center gap-6 text-xs sm:text-sm font-mono">
+      {siteConfig.navItems.map((item) => {
+        const isActive = item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href) && item.href !== '/#about' && item.href !== '/#skills' && item.href !== '/#contact';
+        return (
+          <a
+            href={item.href}
+            class={`transition-colors hover:text-[var(--color-accent)] ${
+              isActive ? 'text-[var(--color-accent)] font-semibold' : 'text-[var(--color-text-muted)]'
+            }`}
+          >
+            {item.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobile-menu-toggle"
+      type="button"
+      aria-label="Toggle navigation menu"
+      class="md:hidden p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus:outline-none cursor-pointer"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-[var(--color-border)] bg-[#111823] px-4 py-4 space-y-3 font-mono text-sm">
+    {siteConfig.navItems.map((item) => (
+      <a
+        href={item.href}
+        class="block text-[var(--color-text-muted)] hover:text-[var(--color-accent)] py-1"
+      >
+        {item.label}
+      </a>
+    ))}
+  </div>
+</header>
+
+<script>
+  function setupNavbar() {
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (menuToggle && mobileMenu) {
+      menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+      // Close menu when clicking on an anchor
+      mobileMenu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+        });
+      });
+    }
+  }
+
+  setupNavbar();
+  document.addEventListener('astro:after-swap', setupNavbar);
+</script>

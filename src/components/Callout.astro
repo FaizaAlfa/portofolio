@@ -1,0 +1,58 @@
+---
+interface Props {
+  type?: 'note' | 'tip' | 'warning' | 'danger' | 'info';
+  title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+
+const styles = {
+  note: {
+    border: 'border-cyan-500/40',
+    bg: 'bg-cyan-500/10',
+    text: 'text-cyan-400',
+    icon: 'ℹ️',
+    defaultTitle: 'NOTE',
+  },
+  tip: {
+    border: 'border-emerald-500/40',
+    bg: 'bg-emerald-500/10',
+    text: 'text-emerald-400',
+    icon: '💡',
+    defaultTitle: 'PRO-TIP',
+  },
+  warning: {
+    border: 'border-amber-500/40',
+    bg: 'bg-amber-500/10',
+    text: 'text-amber-400',
+    icon: '⚠️',
+    defaultTitle: 'WARNING',
+  },
+  danger: {
+    border: 'border-rose-500/40',
+    bg: 'bg-rose-500/10',
+    text: 'text-rose-400',
+    icon: '🚨',
+    defaultTitle: 'CRITICAL',
+  },
+  info: {
+    border: 'border-blue-500/40',
+    bg: 'bg-blue-500/10',
+    text: 'text-blue-400',
+    icon: '🔍',
+    defaultTitle: 'ANALYSIS',
+  },
+};
+
+const current = styles[type] || styles.note;
+---
+
+<div class={`my-6 rounded-lg border ${current.border} ${current.bg} p-4 text-sm backdrop-blur-sm`}>
+  <div class="flex items-center gap-2 font-mono font-bold tracking-wide uppercase mb-2">
+    <span>{current.icon}</span>
+    <span class={current.text}>{title || current.defaultTitle}</span>
+  </div>
+  <div class="text-[var(--color-text)] leading-relaxed prose-sm">
+    <slot />
+  </div>
+</div>

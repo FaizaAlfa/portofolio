@@ -1,0 +1,39 @@
+---
+import { getCollection, render } from 'astro:content';
+import WriteupLayout from '../../layouts/WriteupLayout.astro';
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+export async function getStaticPaths() {
+  const writeups = await getCollection('writeups', ({ data }) => !data.draft);
+  const sorted = writeups.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+  return sorted.map((writeup, index) => {
+    const prevWriteup = index < sorted.length - 1 ? sorted[index + 1] : undefined;
+    const nextWriteup = index > 0 ? sorted[index - 1] : undefined;
+
+    return {
+      params: { slug: writeup.id },
+      props: { writeup, prevWriteup, nextWriteup },
+    };
+  });
+}
+
+const { writeup, prevWriteup, nextWriteup } = Astro.props;
+const { Content, headings } = await render(writeup);
+
+// Approximate reading time calculation
+const wordCount = (writeup.body || '').split(/\s+/g).length;
+const readMinutes = Math.max(1, Math.ceil(wordCount / 180));
+const readTime = `${readMinutes} min read`;
+---
+
+<WriteupLayout
+  writeup={writeup}
+  headings={headings}
+  prevWriteup={prevWriteup}
+  nextWriteup={nextWriteup}
+  readTime={readTime}
+>
+  <Content components={{ Callout, FlagReveal }} />
+</WriteupLayout>

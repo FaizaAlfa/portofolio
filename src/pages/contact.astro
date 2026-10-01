@@ -1,0 +1,172 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+import { socialLinks } from '../data/socials';
+
+// Obfuscate email components for anti-scraping
+const emailUser = 'faiza';
+const emailDomain = 'fazer0.dev';
+---
+
+<BaseLayout
+  title="Contact & Communications"
+  description="Connect with Faiza (FAZer0) via secure communication channels, social profiles, and PGP encryption."
+>
+  <!-- Page Header -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] font-bold uppercase tracking-wider mb-2">
+      <span>// 05. REACH_OUT</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-extrabold font-mono text-[var(--color-text)] tracking-tight">
+      Contact & <span class="text-[var(--color-accent)]">Endpoints</span>
+    </h1>
+    <p class="text-sm sm:text-base text-[var(--color-text-muted)] mt-2 font-mono">
+      Channels for internship inquiries, CTF team collaborations, and security research discussions.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Contact Methods -->
+    <div class="lg:col-span-6 space-y-6">
+      {/* Obfuscated Email Card */}
+      <div class="cyber-panel p-6 space-y-4">
+        <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] flex items-center gap-2">
+          <span>📧</span>
+          <span>Direct Electronic Mail</span>
+        </h2>
+        <p class="text-xs text-[var(--color-text-muted)] leading-relaxed">
+          Feel free to reach out regarding security roles, internship openings, or binary reversing challenges.
+        </p>
+
+        <!-- Interactive decoded email button -->
+        <div class="p-4 rounded bg-[var(--color-bg)] border border-[var(--color-border)] space-y-2">
+          <div class="text-[11px] font-mono text-[var(--color-text-dim)] uppercase">
+            Interactive Mailto Link (Bot-Protected)
+          </div>
+          <div id="email-container" class="font-mono text-sm">
+            <button
+              id="reveal-email-btn"
+              type="button"
+              data-user={emailUser}
+              data-domain={emailDomain}
+              class="px-3 py-1.5 bg-[var(--color-accent)]/10 hover:bg-[var(--color-accent)]/20 text-[var(--color-accent)] border border-[var(--color-accent)]/40 rounded text-xs font-semibold cursor-pointer transition-colors"
+            >
+              [ Click to Reveal Email ]
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Social Endpoints Grid */}
+      <div class="cyber-panel p-6 space-y-4">
+        <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent-2)] flex items-center gap-2">
+          <span>🌐</span>
+          <span>Online Identities & Platforms</span>
+        </h2>
+
+        <div class="space-y-3 font-mono text-xs">
+          {socialLinks.map((link) => (
+            <div class="flex items-center justify-between p-3 rounded bg-[var(--color-bg)] border border-[var(--color-border)]">
+              <div>
+                <span class="text-[var(--color-text-dim)] uppercase text-[10px] block">{link.name}</span>
+                <span class="text-[var(--color-text)] font-semibold">{link.display}</span>
+              </div>
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-2.5 py-1 text-[11px] rounded bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] border border-[var(--color-border)] text-[var(--color-accent)] hover:underline"
+              >
+                Connect ↗
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- PGP Public Key Section -->
+    <div class="lg:col-span-6 space-y-6">
+      <div class="cyber-panel p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
+          <h2 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-warning)] flex items-center gap-2">
+            <span>🔑</span>
+            <span>PGP Fingerprint & Encryption</span>
+          </h2>
+          <button
+            id="copy-pgp-btn"
+            type="button"
+            class="text-xs font-mono text-[var(--color-accent)] hover:underline cursor-pointer"
+          >
+            Copy Key
+          </button>
+        </div>
+
+        <div class="space-y-2 text-xs font-mono">
+          <div class="text-[11px] text-[var(--color-text-dim)] uppercase">
+            Key Fingerprint
+          </div>
+          <div class="p-2.5 rounded bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text)] break-all font-mono text-[11px]">
+            {siteConfig.socials.pgpFingerprint}
+          </div>
+        </div>
+
+        <div class="space-y-2 font-mono text-xs">
+          <div class="text-[11px] text-[var(--color-text-dim)] uppercase">
+            Public Key Block
+          </div>
+          <pre id="pgp-block" class="p-3 rounded bg-[#0a0e14] border border-[var(--color-border)] text-[10px] text-[var(--color-text-muted)] overflow-x-auto leading-relaxed">
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: OpenPGP.js v5.0.0
+Comment: FAZer0 Security Identity
+
+mQGNBF/sample_placeholder_key_block_for_fazer0_sec_portfolio...
+...TODO(Faiza): Paste your real GPG public key export here...
+...Keysize: RSA 4096 / Ed25519...
+-----END PGP PUBLIC KEY BLOCK-----</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  function setupContactActions() {
+    const revealBtn = document.getElementById('reveal-email-btn');
+    const container = document.getElementById('email-container');
+
+    if (revealBtn && container) {
+      revealBtn.addEventListener('click', () => {
+        const user = revealBtn.getAttribute('data-user') || 'faiza';
+        const domain = revealBtn.getAttribute('data-domain') || 'fazer0.dev';
+        const fullEmail = `${user}@${domain}`;
+
+        container.innerHTML = `
+          <a href="mailto:${fullEmail}" class="text-[var(--color-accent)] hover:underline font-bold text-sm select-all">
+            ${fullEmail}
+          </a>
+          <span class="text-[11px] text-[var(--color-text-dim)] block mt-1">(Click to compose email in default client)</span>
+        `;
+      });
+    }
+
+    const copyPgpBtn = document.getElementById('copy-pgp-btn');
+    const pgpBlock = document.getElementById('pgp-block');
+    if (copyPgpBtn && pgpBlock) {
+      copyPgpBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pgpBlock.innerText.trim());
+          copyPgpBtn.innerText = 'Copied! ✓';
+          setTimeout(() => {
+            copyPgpBtn.innerText = 'Copy Key';
+          }, 2000);
+        } catch (e) {
+          copyPgpBtn.innerText = 'Failed';
+        }
+      });
+    }
+  }
+
+  setupContactActions();
+  document.addEventListener('astro:after-swap', setupContactActions);
+</script>

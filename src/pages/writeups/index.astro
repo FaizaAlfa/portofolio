@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WriteupFilter, { type WriteupItem } from '../../components/islands/WriteupFilter';
+import { getCollection } from 'astro:content';
+
+const writeupEntries = await getCollection('writeups', ({ data }) => !data.draft);
+
+const sortedWriteups: WriteupItem[] = writeupEntries
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .map((w) => ({
+    id: w.id,
+    slug: w.id,
+    title: w.data.title,
+    description: w.data.description,
+    date: w.data.date.toISOString(),
+    formattedDate: new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(w.data.date),
+    event: w.data.event,
+    category: w.data.category,
+    difficulty: w.data.difficulty,
+    points: w.data.points,
+    tags: w.data.tags,
+    tools: w.data.tools,
+  }));
+---
+
+<BaseLayout
+  title="CTF Writeup Archive"
+  description="Searchable archive of CTF writeups, binary disassembly solutions, memory triage reports, and security challenge walkthroughs."
+>
+  <!-- Page Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] font-bold uppercase tracking-wider mb-2">
+      <span>// 03. ARCHIVE</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-extrabold font-mono text-[var(--color-text)] tracking-tight">
+      CTF <span class="text-[var(--color-accent)]">Writeups</span>
+    </h1>
+    <p class="text-sm sm:text-base text-[var(--color-text-muted)] mt-2 font-mono">
+      Interactive database of solved challenges across Reverse Engineering, Digital Forensics, and Binary Exploitation.
+    </p>
+  </div>
+
+  <!-- Interactive Search & Filtering Island -->
+  <WriteupFilter initialWriteups={sortedWriteups} client:visible />
+</BaseLayout>

@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = await getCollection('projects');
+
+const getStatusBadge = (status: string) => {
+  switch (status) {
+    case 'active':
+      return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+    case 'wip':
+      return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+    default:
+      return 'bg-slate-500/10 text-slate-400 border-slate-500/30';
+  }
+};
+---
+
+<BaseLayout
+  title="Projects & Security Tooling"
+  description="Daftar proyek, tools keamanan, plugin, dan script analisis oleh Faiza (FAZer0)."
+>
+  <div class="mb-8">
+    <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] font-bold uppercase tracking-wider mb-2">
+      <span>// PROJECTS</span>
+    </div>
+    <h1 class="text-3xl font-extrabold font-mono text-[var(--color-text)] tracking-tight">
+      Projects & <span class="text-[var(--color-accent)]">Security Tools</span>
+    </h1>
+    <p class="text-sm text-[var(--color-text-muted)] mt-2 font-mono">
+      Koleksi tools, plugin dekompilasi, dan script otomasi yang telah dikembangkan.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {projects.map((project) => {
+      const { title, description, stack, repo, demo, status } = project.data;
+      const statusClass = getStatusBadge(status);
+
+      return (
+        <div class="cyber-panel p-6 flex flex-col justify-between hover:border-[var(--color-accent)]/50 transition-colors">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded border ${statusClass}`}>
+                {status}
+              </span>
+
+              <div class="flex items-center gap-3 text-xs font-mono">
+                {repo && (
+                  <a
+                    href={repo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+                  >
+                    GitHub ↗
+                  </a>
+                )}
+                {demo && (
+                  <a
+                    href={demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-[var(--color-accent-2)] hover:underline"
+                  >
+                    Demo ↗
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <h2 class="font-mono text-base font-bold text-[var(--color-text)] mb-2">
+              {title}
+            </h2>
+
+            <p class="text-xs text-[var(--color-text-muted)] leading-relaxed mb-6">
+              {description}
+            </p>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap gap-1.5 pt-4 border-t border-[var(--color-border)]">
+              {stack.map((tech) => (
+                <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text-dim)]">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</BaseLayout>

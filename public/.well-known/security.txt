@@ -1,0 +1,7 @@
+# FAZer0 Security Vulnerability Disclosure Policy
+Contact: mailto:faiza@fazer0.dev
+Expires: 2027-12-31T23:59:59.000Z
+Encryption: https://fazer0.dev/contact
+Preferred-Languages: en, id
+Canonical: https://fazer0.dev/.well-known/security.txt
+Policy: https://fazer0.dev/about

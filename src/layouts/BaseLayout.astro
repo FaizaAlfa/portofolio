@@ -1,0 +1,152 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { siteConfig } from '../data/site';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  articleDate?: string;
+  type?: 'website' | 'article';
+}
+
+const {
+  title = siteConfig.title,
+  description = siteConfig.description,
+  image = '/og-image.png',
+  type = 'website',
+  articleDate,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || siteConfig.siteUrl);
+const ogImageURL = new URL(image, Astro.site || siteConfig.siteUrl);
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: siteConfig.author,
+  alternateName: siteConfig.handle,
+  url: siteConfig.siteUrl,
+  jobTitle: 'Cybersecurity Student & Reverse Engineer',
+  worksFor: {
+    '@type': 'CollegeOrUniversity',
+    name: siteConfig.university,
+  },
+  sameAs: [
+    siteConfig.socials.github,
+    siteConfig.socials.linkedin,
+    siteConfig.socials.instagram,
+    siteConfig.socials.ctftime,
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="FAZer0 CTF Writeups RSS Feed" href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Meta Tags -->
+    <title>{title === siteConfig.title ? title : `${title} // ${siteConfig.handle}`}</title>
+    <meta name="title" content={title === siteConfig.title ? title : `${title} // ${siteConfig.handle}`} />
+    <meta name="description" content={description} />
+    <meta name="author" content={siteConfig.author} />
+    <meta name="theme-color" content="#0b0f14" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:site_name" content={siteConfig.title} />
+    {articleDate && <meta property="article:published_time" content={articleDate} />}
+
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+  </head>
+  <body class="bg-[var(--color-bg)] text-[var(--color-text)] antialiased min-h-screen flex flex-col">
+    <!-- Skip Link -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-[var(--color-accent)] text-[#0b0f14] font-mono font-bold rounded shadow-lg"
+    >
+      Skip to main content
+    </a>
+
+    <!-- Navbar -->
+    <Navbar currentPath={Astro.url.pathname} />
+
+    <!-- Main Content -->
+    <main id="main-content" class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <Footer />
+
+    <!-- Copy Code Helper Script -->
+    <script>
+      function setupCodeCopyButtons() {
+        const codeBlocks = document.querySelectorAll('pre.shiki');
+        codeBlocks.forEach((pre) => {
+          if (pre.querySelector('.copy-code-button')) return;
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'relative group my-4';
+          pre.parentNode?.insertBefore(wrapper, pre);
+          wrapper.appendChild(pre);
+
+          const copyBtn = document.createElement('button');
+          copyBtn.className =
+            'copy-code-button absolute top-2.5 right-2.5 px-2 py-1 text-[10px] font-mono rounded bg-[#1f2a37]/80 text-[#8b98a9] hover:text-[#39ff88] hover:bg-[#1f2a37] border border-[#374151] opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity cursor-pointer';
+          copyBtn.type = 'button';
+          copyBtn.innerHTML = 'Copy';
+          copyBtn.setAttribute('aria-label', 'Copy code snippet to clipboard');
+
+          copyBtn.addEventListener('click', async () => {
+            const code = (pre.querySelector('code') as HTMLElement)?.innerText || (pre as HTMLElement).innerText || '';
+            try {
+              await navigator.clipboard.writeText(code);
+              copyBtn.innerHTML = 'Copied! ✓';
+              copyBtn.classList.add('text-[#39ff88]');
+              setTimeout(() => {
+                copyBtn.innerHTML = 'Copy';
+                copyBtn.classList.remove('text-[#39ff88]');
+              }, 2000);
+            } catch (err) {
+              copyBtn.innerHTML = 'Failed';
+            }
+          });
+
+          wrapper.appendChild(copyBtn);
+        });
+      }
+
+      setupCodeCopyButtons();
+      document.addEventListener('astro:after-swap', setupCodeCopyButtons);
+    </script>
+  </body>
+</html>

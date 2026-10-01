@@ -1,0 +1,175 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { skillCategories, currentlyLearning, currentlyPlaying } from '../data/skills';
+import { siteConfig } from '../data/site';
+---
+
+<BaseLayout title="About" description="Biography, technical background, learning roadmap, and security tool matrix of Faiza (FAZer0).">
+  <!-- Page Header -->
+  <div class="mb-10">
+    <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] font-bold uppercase tracking-wider mb-2">
+      <span>// 01. PROFILE</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-extrabold font-mono text-[var(--color-text)] tracking-tight">
+      About <span class="text-[var(--color-accent)]">{siteConfig.author}</span>
+    </h1>
+    <p class="text-sm sm:text-base text-[var(--color-text-muted)] mt-2 font-mono">
+      Informatics Engineering undergraduate at Universitas Brawijaya • CTF Player • Binary Analyst
+    </p>
+  </div>
+
+  <!-- Main Bio & Story -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+    <div class="lg:col-span-8 space-y-6">
+      <div class="cyber-panel p-6 sm:p-8 space-y-4">
+        <h2 class="text-lg font-mono font-bold text-[var(--color-text)] flex items-center gap-2 border-b border-[var(--color-border)] pb-3">
+          <span class="text-[var(--color-accent)]">&gt;</span>
+          <span>Background & Trajectory</span>
+        </h2>
+        
+        <p class="text-sm leading-relaxed text-[var(--color-text)]">
+          Hello! I am <strong>Faiza</strong> (online handle <strong>FAZer0</strong>), currently in my <strong>3rd semester</strong> pursuing a Bachelor's degree in <strong>Informatics Engineering (Teknik Informatika)</strong> at <strong>Universitas Brawijaya</strong>, Malang, Indonesia.
+        </p>
+
+        <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">
+          My primary fascination lies within the internal mechanics of software and operating systems. Rather than viewing compiled binaries as black boxes, I enjoy deconstructing machine instructions, unraveling anti-debugging routines, dissecting obfuscated virtual machines, and investigating anomalous memory artifacts from compromised hosts.
+        </p>
+
+        <p class="text-sm leading-relaxed text-[var(--color-text-muted)]">
+          In CTF competitions, I frequently represent university teams on <strong>Reverse Engineering</strong> and <strong>Digital Forensics</strong> categories. When I am not solving challenge binaries, I build custom Python/Ghidra scripts to automate decompilation workflows and forensic triage pipelines.
+        </p>
+      </div>
+
+      <!-- Currently Learning & Currently Playing Blocks -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Currently Learning */}
+        <div class="cyber-panel p-6 space-y-3">
+          <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent-2)] flex items-center gap-2">
+            <span>⚡</span>
+            <span>Currently Exploring</span>
+          </h3>
+          <ul class="space-y-2.5">
+            {currentlyLearning.map((item) => (
+              <li class="text-xs font-mono border-l-2 border-[var(--color-accent-2)]/50 pl-3 py-0.5">
+                <span class="text-[var(--color-text)] block font-semibold">{item.topic}</span>
+                <span class="text-[10px] text-[var(--color-text-dim)] uppercase">{item.progress}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Currently Playing */}
+        <div class="cyber-panel p-6 space-y-3">
+          <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-warning)] flex items-center gap-2">
+            <span>🎯</span>
+            <span>Active Platforms</span>
+          </h3>
+          <ul class="space-y-2.5">
+            {currentlyPlaying.map((item) => (
+              <li class="text-xs font-mono border-l-2 border-[var(--color-warning)]/50 pl-3 py-0.5">
+                <span class="text-[var(--color-text)] block font-semibold">{item.platform}</span>
+                <span class="text-[10px] text-[var(--color-text-dim)]">{item.notes}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Info Column -->
+    <div class="lg:col-span-4 space-y-6">
+      <div class="cyber-panel p-6 space-y-4">
+        <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] border-b border-[var(--color-border)] pb-2">
+          System Info
+        </h3>
+        <dl class="space-y-3 text-xs font-mono">
+          <div>
+            <dt class="text-[var(--color-text-dim)]">University</dt>
+            <dd class="text-[var(--color-text)] font-semibold">{siteConfig.university}</dd>
+          </div>
+          <div>
+            <dt class="text-[var(--color-text-dim)]">Major</dt>
+            <dd class="text-[var(--color-text)] font-semibold">{siteConfig.major}</dd>
+          </div>
+          <div>
+            <dt class="text-[var(--color-text-dim)]">Academic Standing</dt>
+            <dd class="text-[var(--color-text)] font-semibold">{siteConfig.semester}</dd>
+          </div>
+          <div>
+            <dt class="text-[var(--color-text-dim)]">Location</dt>
+            <dd class="text-[var(--color-text)] font-semibold">{siteConfig.location}</dd>
+          </div>
+          <div>
+            <dt class="text-[var(--color-text-dim)]">Primary OS</dt>
+            <dd class="text-[var(--color-text)] font-semibold">Arch Linux / Debian Kali</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="cyber-panel p-6 bg-[var(--color-accent)]/5 border-[var(--color-accent)]/30 space-y-3">
+        <h3 class="text-xs font-mono font-bold text-[var(--color-accent)] uppercase tracking-wider">
+          Career Aspirations
+        </h3>
+        <p class="text-xs leading-relaxed text-[var(--color-text-muted)]">
+          Seeking opportunities in <strong>Malware Analysis</strong>, <strong>Vulnerability Research</strong>, <strong>Incident Response (DFIR)</strong>, and Security Engineering internships.
+        </p>
+        <a
+          href="/contact"
+          class="inline-block text-xs font-mono text-[var(--color-accent)] hover:underline font-bold"
+        >
+          Get in touch &rarr;
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data-Driven Skills Matrix -->
+  <section class="space-y-6">
+    <div class="flex items-center gap-2 font-mono text-sm uppercase tracking-wider text-[var(--color-text)] font-bold">
+      <span class="text-[var(--color-accent)]">&gt;&gt;</span>
+      <span>Technical Arsenal & Tooling Matrix</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {skillCategories.map((cat) => (
+        <div class="cyber-panel p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
+            <h3 class="font-mono font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
+              <span class="text-[var(--color-accent)]">#</span>
+              <span>{cat.title}</span>
+            </h3>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text-dim)] uppercase font-semibold">
+              {cat.badge}
+            </span>
+          </div>
+
+          <p class="text-xs text-[var(--color-text-muted)] leading-relaxed">
+            {cat.description}
+          </p>
+
+          <div class="space-y-2 pt-2">
+            {cat.skills.map((skill) => (
+              <div class="flex items-start justify-between text-xs font-mono p-2 rounded bg-[var(--color-bg)] border border-[var(--color-border)]">
+                <div>
+                  <span class={`font-bold ${skill.highlight ? 'text-[var(--color-accent)]' : 'text-[var(--color-text)]'}`}>
+                    {skill.name}
+                  </span>
+                  {skill.description && (
+                    <span class="text-[11px] text-[var(--color-text-dim)] block sm:inline sm:ml-2">
+                      — {skill.description}
+                    </span>
+                  )}
+                </div>
+                {skill.level && (
+                  <span class="text-[10px] px-1.5 py-0.5 rounded text-[var(--color-text-dim)] bg-[var(--color-surface)] border border-[var(--color-border)] shrink-0 ml-2">
+                    {skill.level}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

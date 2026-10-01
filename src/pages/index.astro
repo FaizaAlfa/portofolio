@@ -1,0 +1,373 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { skillCategories } from '../data/skills';
+import { siteConfig } from '../data/site';
+
+// Fetch non-draft writeups
+const writeups = await getCollection('writeups', ({ data }) => !data.draft);
+const recentWriteups = writeups
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 4);
+
+// Fetch projects
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects.slice(0, 4);
+
+// Fetch CTF entries
+const ctfEntries = await getCollection('ctf');
+const sortedCTF = ctfEntries.sort((a, b) => b.data.year - a.data.year);
+---
+
+<BaseLayout>
+  <!-- Hero Section -->
+  <section class="py-6 sm:py-10 border-b border-[var(--color-border)]">
+    <div class="space-y-4">
+      <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] font-semibold">
+        <span class="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse"></span>
+        <span>faiza@fazer0:~ (cybersecurity portfolio)</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold font-mono text-[var(--color-text)] tracking-tight">
+        Faiza <span class="text-[var(--color-accent)]">/ FAZer0</span>
+      </h1>
+
+      <p class="text-base sm:text-lg text-[var(--color-accent-2)] font-mono font-medium max-w-2xl">
+        Informatics Engineering Student @ Universitas Brawijaya • CTF Player
+      </p>
+
+      <p class="text-sm sm:text-base text-[var(--color-text-muted)] leading-relaxed max-w-3xl">
+        Fokus pada bidang keamanan siber dengan spesialisasi <strong>Reverse Engineering</strong> dan <strong>Digital Forensics</strong>. Terbiasa menganalisis struktur binary x86/x64, membongkar proteksi anti-debugging, dan melakukan triage artefak memori insiden digital.
+      </p>
+
+      <!-- Quick CTAs -->
+      <div class="pt-4 flex flex-wrap items-center gap-3 font-mono text-xs sm:text-sm">
+        <a
+          href="/writeups"
+          class="px-4 py-2 bg-[var(--color-accent)] hover:bg-[var(--color-accent)]/90 text-[#0b0f14] font-bold rounded transition-colors shadow-sm"
+        >
+          [ Lihat Writeups &rarr; ]
+        </a>
+        <a
+          href="/projects"
+          class="px-4 py-2 bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] border border-[var(--color-border)] rounded transition-colors"
+        >
+          ./projects
+        </a>
+        <a
+          href="#contact"
+          class="px-4 py-2 text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+        >
+          Hubungi Saya &darr;
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About & Focus Summary -->
+  <section id="about" class="py-12 border-b border-[var(--color-border)] space-y-6">
+    <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] uppercase tracking-wider font-bold">
+      <span>// 01. ABOUT</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="md:col-span-2 space-y-4">
+        <h2 class="text-xl sm:text-2xl font-mono font-bold text-[var(--color-text)]">
+          Tentang Saya
+        </h2>
+        <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">
+          Saya adalah mahasiswa <strong>Semester 3 Program Studi Teknik Informatika di Universitas Brawijaya</strong>. Aktif mengikuti berbagai kompetisi Capture The Flag (CTF) baik tingkat universitas maupun nasional, dengan fokus memecahkan tantangan decompilation, dynamic debugging, dan ekstraksi memory dump.
+        </p>
+        <p class="text-sm text-[var(--color-text-muted)] leading-relaxed">
+          Selain bermain CTF, saya juga mendokumentasikan alur penyelesaian dalam bentuk writeup teknis serta membuat script pendukung untuk mengotomasi proses analisis binary.
+        </p>
+      </div>
+
+      <!-- Quick Info Card -->
+      <div class="cyber-panel p-5 space-y-3 font-mono text-xs">
+        <div class="text-[var(--color-accent)] font-bold border-b border-[var(--color-border)] pb-2 uppercase">
+          Profile Brief
+        </div>
+        <div>
+          <span class="text-[var(--color-text-dim)] block text-[10px]">Pendidikan:</span>
+          <span class="text-[var(--color-text)] font-semibold">Universitas Brawijaya (S1)</span>
+        </div>
+        <div>
+          <span class="text-[var(--color-text-dim)] block text-[10px]">Semester:</span>
+          <span class="text-[var(--color-text)] font-semibold">Semester 3 (Informatika)</span>
+        </div>
+        <div>
+          <span class="text-[var(--color-text-dim)] block text-[10px]">Fokus Utama:</span>
+          <span class="text-[var(--color-accent)] font-semibold">Reverse Engineering & Forensics</span>
+        </div>
+        <div>
+          <span class="text-[var(--color-text-dim)] block text-[10px]">Lokasi:</span>
+          <span class="text-[var(--color-text)] font-semibold">{siteConfig.location}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section id="skills" class="py-12 border-b border-[var(--color-border)] space-y-6">
+    <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] uppercase tracking-wider font-bold">
+      <span>// 02. SKILLS & TOOLS</span>
+    </div>
+
+    <h2 class="text-xl sm:text-2xl font-mono font-bold text-[var(--color-text)]">
+      Keahlian & Tools Keamanan
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {skillCategories.map((cat) => {
+        const isPrimary = cat.badge === 'Primary Focus';
+        const isSecondary = cat.badge === 'Secondary Focus';
+        const isRoadmap = cat.badge === 'Learning Roadmap';
+
+        const badgeStyle = isPrimary
+          ? 'border-[var(--color-accent)]/50 bg-[var(--color-accent)]/15 text-[var(--color-accent)] font-bold'
+          : isSecondary
+          ? 'border-[var(--color-accent-2)]/50 bg-[var(--color-accent-2)]/15 text-[var(--color-accent-2)] font-bold'
+          : isRoadmap
+          ? 'border-purple-500/50 bg-purple-500/15 text-purple-300 font-semibold'
+          : 'border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text-dim)]';
+
+        return (
+          <div class={`cyber-panel p-5 space-y-3 ${isRoadmap ? 'md:col-span-2 border-dashed border-purple-500/30' : ''} ${isPrimary ? 'border-[var(--color-accent)]/30' : ''}`}>
+            <div class="flex items-center justify-between border-b border-[var(--color-border)] pb-2.5">
+              <div>
+                <h3 class="font-mono font-bold text-sm sm:text-base text-[var(--color-text)] flex items-center gap-2">
+                  <span class={isPrimary ? 'text-[var(--color-accent)]' : isSecondary ? 'text-[var(--color-accent-2)]' : isRoadmap ? 'text-purple-400' : 'text-[var(--color-text-muted)]'}>#</span>
+                  <span>{cat.title}</span>
+                </h3>
+              </div>
+              <span class={`text-[10px] font-mono px-2.5 py-0.5 rounded border uppercase tracking-wider ${badgeStyle}`}>
+                {cat.badge}
+              </span>
+            </div>
+
+            <p class="text-xs text-[var(--color-text-muted)] leading-relaxed">
+              {cat.description}
+            </p>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+              {cat.skills.map((skill) => (
+                <span class={`px-2.5 py-1 text-xs font-mono rounded border transition-colors ${
+                  isPrimary
+                    ? 'border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-semibold'
+                    : isSecondary
+                    ? 'border-[var(--color-accent-2)]/40 bg-[var(--color-accent-2)]/10 text-[var(--color-accent-2)] font-semibold'
+                    : isRoadmap
+                    ? 'border-purple-500/30 bg-purple-500/10 text-purple-200'
+                    : 'border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)]'
+                }`}>
+                  {skill.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- Projects Section Preview -->
+  <section id="projects" class="py-12 border-b border-[var(--color-border)] space-y-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] uppercase tracking-wider font-bold">
+        <span>// 03. PROJECTS</span>
+      </div>
+      <a href="/projects" class="text-xs font-mono text-[var(--color-accent)] hover:underline">
+        Lihat Semua Proyek &rarr;
+      </a>
+    </div>
+
+    <h2 class="text-xl sm:text-2xl font-mono font-bold text-[var(--color-text)]">
+      Proyek & Security Tools
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {featuredProjects.map((p) => (
+        <div class="cyber-panel p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs font-mono mb-2">
+              <span class="text-[10px] uppercase px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold">
+                {p.data.status}
+              </span>
+              {p.data.repo && (
+                <a
+                  href={p.data.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]"
+                >
+                  GitHub ↗
+                </a>
+              )}
+            </div>
+            <h3 class="font-mono text-base font-bold text-[var(--color-text)] mb-2">
+              {p.data.title}
+            </h3>
+            <p class="text-xs text-[var(--color-text-muted)] leading-relaxed line-clamp-3 mb-4">
+              {p.data.description}
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-1 pt-3 border-t border-[var(--color-border)]">
+            {p.data.stack.map((tech) => (
+              <span class="px-1.5 py-0.5 text-[10px] font-mono bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text-dim)] rounded">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Writeups Section Preview -->
+  <section id="writeups" class="py-12 border-b border-[var(--color-border)] space-y-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] uppercase tracking-wider font-bold">
+        <span>// 04. WRITEUPS</span>
+      </div>
+      <a href="/writeups" class="text-xs font-mono text-[var(--color-accent)] hover:underline">
+        Buka Arsip Writeup &rarr;
+      </a>
+    </div>
+
+    <h2 class="text-xl sm:text-2xl font-mono font-bold text-[var(--color-text)]">
+      CTF Writeups Terbaru
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {recentWriteups.map((w) => (
+        <a
+          href={`/writeups/${w.id}`}
+          class="cyber-panel p-5 flex flex-col justify-between hover:border-[var(--color-accent)]/50 transition-colors block group"
+        >
+          <div>
+            <div class="flex items-center justify-between text-[10px] font-mono mb-2">
+              <span class="px-2 py-0.5 rounded border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10 text-[var(--color-accent)] uppercase font-bold">
+                {w.data.category}
+              </span>
+              <span class="text-[var(--color-text-dim)] uppercase font-semibold">
+                {w.data.difficulty}
+              </span>
+            </div>
+
+            <h3 class="font-mono text-sm sm:text-base font-bold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors mb-2">
+              {w.data.title}
+            </h3>
+
+            <p class="text-xs text-[var(--color-text-muted)] line-clamp-2 leading-relaxed mb-4">
+              {w.data.description}
+            </p>
+          </div>
+
+          <div class="pt-3 border-t border-[var(--color-border)] text-[11px] font-mono text-[var(--color-text-dim)] flex items-center justify-between">
+            <span class="truncate max-w-[70%]">{w.data.event}</span>
+            <span class="text-[var(--color-accent)] font-bold">Baca &rarr;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- CTF Competitions Timeline -->
+  <section class="py-12 border-b border-[var(--color-border)] space-y-6">
+    <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] uppercase tracking-wider font-bold">
+      <span>// 05. COMPETITIONS</span>
+    </div>
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <h2 class="text-xl sm:text-2xl font-mono font-bold text-[var(--color-text)]">
+        Riwayat Kompetisi CTF
+      </h2>
+      <a
+        href={siteConfig.socials.ctftime}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-xs font-mono text-[var(--color-accent-2)] hover:underline inline-flex items-center gap-1"
+      >
+        <span>Profil CTFtime</span>
+        <span>↗</span>
+      </a>
+    </div>
+
+    <div class="space-y-4">
+      {sortedCTF.map((entry) => (
+        <div class="cyber-panel p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
+          <div>
+            <span class="text-[10px] text-[var(--color-accent-2)] font-bold uppercase block">{entry.data.year}</span>
+            <strong class="text-sm text-[var(--color-text)] block font-semibold">{entry.data.event}</strong>
+            <span class="text-[var(--color-text-dim)] text-[11px]">Tim: {entry.data.team} • Kategori: {entry.data.categoriesSolved.join(', ')}</span>
+          </div>
+
+          <div class="shrink-0">
+            <span class="px-3 py-1 rounded bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/40 text-[var(--color-accent)] font-bold">
+              Rank #{entry.data.rank} {entry.data.totalTeams ? `/ ${entry.data.totalTeams}` : ''}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-12 space-y-6">
+    <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] uppercase tracking-wider font-bold">
+      <span>// 06. CONTACT</span>
+    </div>
+
+    <h2 class="text-xl sm:text-2xl font-mono font-bold text-[var(--color-text)]">
+      Kontak & Kolaborasi
+    </h2>
+
+    <div class="cyber-panel p-6 sm:p-8 space-y-6">
+      <p class="text-sm text-[var(--color-text-muted)] max-w-2xl leading-relaxed">
+        Terbuka untuk peluang magang (internship), kolaborasi tim CTF, atau diskusi seputar reverse engineering dan keamanan siber. Silakan hubungi saya melalui saluran berikut:
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 font-mono text-xs">
+        <a
+          href={`mailto:${siteConfig.email}`}
+          class="p-3 rounded bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 transition-colors block text-center"
+        >
+          <span class="text-[var(--color-text-dim)] block text-[10px] uppercase">Email</span>
+          <span class="text-[var(--color-accent)] font-bold truncate block">{siteConfig.email}</span>
+        </a>
+
+        <a
+          href={siteConfig.socials.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-3 rounded bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 transition-colors block text-center"
+        >
+          <span class="text-[var(--color-text-dim)] block text-[10px] uppercase">GitHub</span>
+          <span class="text-[var(--color-text)] font-bold block">FAZer0</span>
+        </a>
+
+        <a
+          href={siteConfig.socials.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-3 rounded bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 transition-colors block text-center"
+        >
+          <span class="text-[var(--color-text-dim)] block text-[10px] uppercase">LinkedIn</span>
+          <span class="text-[var(--color-text)] font-bold block">Faiza</span>
+        </a>
+
+        <a
+          href={siteConfig.socials.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-3 rounded bg-[var(--color-bg)] border border-[var(--color-border)] hover:border-[var(--color-accent)]/50 transition-colors block text-center"
+        >
+          <span class="text-[var(--color-text-dim)] block text-[10px] uppercase">Instagram</span>
+          <span class="text-[var(--color-text)] font-bold block">@faizaalfa_25</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

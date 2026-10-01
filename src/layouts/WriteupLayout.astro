@@ -1,0 +1,207 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  writeup: CollectionEntry<'writeups'>;
+  headings: { depth: number; slug: string; text: string }[];
+  prevWriteup?: CollectionEntry<'writeups'>;
+  nextWriteup?: CollectionEntry<'writeups'>;
+  readTime: string;
+}
+
+const { writeup, headings, prevWriteup, nextWriteup, readTime } = Astro.props;
+const { title, description, date, event, category, difficulty, points, tags, tools } = writeup.data;
+
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(date);
+
+const getCategoryColor = (cat: string) => {
+  switch (cat) {
+    case 'reverse':
+      return 'text-[var(--color-accent)] border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10';
+    case 'forensics':
+      return 'text-[var(--color-accent-2)] border-[var(--color-accent-2)]/30 bg-[var(--color-accent-2)]/10';
+    default:
+      return 'text-slate-300 border-slate-700 bg-slate-800';
+  }
+};
+
+const getDifficultyColor = (diff: string) => {
+  switch (diff) {
+    case 'easy':
+      return 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
+    case 'medium':
+      return 'text-amber-400 border-amber-500/30 bg-amber-500/10';
+    case 'hard':
+      return 'text-rose-400 border-rose-500/30 bg-rose-500/10';
+    case 'insane':
+      return 'text-purple-400 border-purple-500/30 bg-purple-500/10';
+    default:
+      return 'text-slate-400 border-slate-500/30 bg-slate-500/10';
+  }
+};
+
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  articleDate={date.toISOString()}
+>
+  <!-- Back to Writeups Link -->
+  <div class="mb-6">
+    <a
+      href="/writeups"
+      class="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+    >
+      <span>&larr;</span>
+      <span>cd ../writeups</span>
+    </a>
+  </div>
+
+  <!-- Header Banner -->
+  <header class="cyber-panel p-6 sm:p-8 mb-10 border-l-4 border-l-[var(--color-accent)]">
+    <!-- Category & Difficulty Badges -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-2">
+        <span class={`px-2.5 py-1 text-xs font-mono font-bold uppercase rounded border ${getCategoryColor(category)}`}>
+          {category}
+        </span>
+        <span class={`px-2.5 py-1 text-xs font-mono font-bold uppercase rounded border ${getDifficultyColor(difficulty)}`}>
+          {difficulty}
+        </span>
+      </div>
+
+      {points && (
+        <span class="px-3 py-1 text-xs font-mono font-bold text-[var(--color-accent)] bg-[var(--color-surface-hover)] border border-[var(--color-border)] rounded">
+          🏆 {points} PTS
+        </span>
+      )}
+    </div>
+
+    <!-- Title -->
+    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[var(--color-text)] mb-4 font-mono leading-tight">
+      {title}
+    </h1>
+
+    <!-- Description -->
+    <p class="text-sm sm:text-base text-[var(--color-text-muted)] leading-relaxed mb-6 max-w-4xl">
+      {description}
+    </p>
+
+    <!-- Meta Information Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[var(--color-border)] text-xs font-mono">
+      <div>
+        <span class="text-[var(--color-text-dim)] block uppercase text-[10px]">Event</span>
+        <span class="text-[var(--color-text)] font-semibold truncate block">{event}</span>
+      </div>
+      <div>
+        <span class="text-[var(--color-text-dim)] block uppercase text-[10px]">Published</span>
+        <span class="text-[var(--color-text)] font-semibold block">{formattedDate}</span>
+      </div>
+      <div>
+        <span class="text-[var(--color-text-dim)] block uppercase text-[10px]">Estimated Read</span>
+        <span class="text-[var(--color-text)] font-semibold block">{readTime}</span>
+      </div>
+      <div>
+        <span class="text-[var(--color-text-dim)] block uppercase text-[10px]">Tools</span>
+        <span class="text-[var(--color-accent-2)] font-semibold truncate block">{tools.join(', ')}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content Layout with Table of Contents -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Main Article Body -->
+    <article class="lg:col-span-8 xl:col-span-9 prose max-w-none">
+      <slot />
+
+      <!-- Tags list at end of article -->
+      <div class="mt-12 pt-6 border-t border-[var(--color-border)] not-prose">
+        <div class="text-xs font-mono text-[var(--color-text-dim)] uppercase font-semibold mb-2">
+          Techniques & Tags
+        </div>
+        <div class="flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <a
+              href={`/writeups?tag=${encodeURIComponent(tag)}`}
+              class="px-2.5 py-1 text-xs font-mono rounded bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Prev / Next Navigation -->
+      <nav class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 not-prose pt-6 border-t border-[var(--color-border)]">
+        {prevWriteup ? (
+          <a
+            href={`/writeups/${prevWriteup.id}`}
+            class="cyber-panel p-4 hover:border-[var(--color-accent)]/50 transition-all flex flex-col group"
+          >
+            <span class="text-[10px] font-mono text-[var(--color-text-dim)] uppercase">
+              &larr; Previous Writeup
+            </span>
+            <span class="font-mono text-xs font-bold text-[var(--color-text)] group-hover:text-[var(--color-accent)] mt-1 line-clamp-2">
+              {prevWriteup.data.title}
+            </span>
+          </a>
+        ) : (
+          <div></div>
+        )}
+
+        {nextWriteup ? (
+          <a
+            href={`/writeups/${nextWriteup.id}`}
+            class="cyber-panel p-4 hover:border-[var(--color-accent)]/50 transition-all flex flex-col text-right group sm:col-start-2"
+          >
+            <span class="text-[10px] font-mono text-[var(--color-text-dim)] uppercase">
+              Next Writeup &rarr;
+            </span>
+            <span class="font-mono text-xs font-bold text-[var(--color-text)] group-hover:text-[var(--color-accent)] mt-1 line-clamp-2">
+              {nextWriteup.data.title}
+            </span>
+          </a>
+        ) : null}
+      </nav>
+    </article>
+
+    <!-- Sticky Table of Contents Sidebar -->
+    <aside class="hidden lg:block lg:col-span-4 xl:col-span-3">
+      <div class="sticky top-24 space-y-4">
+        <div class="cyber-panel p-4">
+          <div class="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] mb-3 pb-2 border-b border-[var(--color-border)]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+            </svg>
+            <span>Table of Contents</span>
+          </div>
+
+          {tocHeadings.length === 0 ? (
+            <p class="text-xs text-[var(--color-text-dim)] font-mono">No sections.</p>
+          ) : (
+            <ul class="space-y-2 text-xs font-mono max-h-[70vh] overflow-y-auto pr-1">
+              {tocHeadings.map((h) => (
+                <li class={h.depth === 3 ? 'pl-3 border-l border-[var(--color-border)]' : ''}>
+                  <a
+                    href={`#${h.slug}`}
+                    class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors line-clamp-1 block py-0.5"
+                  >
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>

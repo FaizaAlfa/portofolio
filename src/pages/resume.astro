@@ -1,0 +1,182 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteConfig } from '../data/site';
+---
+
+<BaseLayout
+  title="Curriculum Vitae / Resume"
+  description="Curriculum Vitae of Faiza (FAZer0) - Informatics Engineering undergraduate specializing in Reverse Engineering and Digital Forensics."
+>
+  <!-- Controls Row -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 print:hidden">
+    <div>
+      <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] font-bold uppercase tracking-wider mb-1">
+        <span>// 06. DOSSIER</span>
+      </div>
+      <h1 class="text-3xl font-extrabold font-mono text-[var(--color-text)]">
+        Curriculum <span class="text-[var(--color-accent)]">Vitae</span>
+      </h1>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button
+        onclick="window.print()"
+        type="button"
+        class="px-4 py-2 rounded bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] border border-[var(--color-border)] text-xs font-mono text-[var(--color-text)] transition-colors cursor-pointer"
+      >
+        🖨️ Print / Save PDF
+      </button>
+      <a
+        href="/resume.pdf"
+        download="Faiza_FAZer0_Resume.pdf"
+        class="px-4 py-2 rounded bg-[var(--color-accent)] hover:bg-[var(--color-accent)]/90 text-[#0b0f14] text-xs font-mono font-bold transition-all shadow-sm"
+      >
+        ⬇ Download PDF
+      </a>
+    </div>
+  </div>
+
+  <!-- Main CV Container -->
+  <div class="cyber-panel p-6 sm:p-10 space-y-8 bg-[var(--color-surface)] print:bg-white print:text-black print:border-none print:shadow-none print:p-0">
+    <!-- Header Summary -->
+    <div class="border-b border-[var(--color-border)] pb-6 print:border-black/20">
+      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-mono font-bold text-[var(--color-text)] print:text-black">
+            {siteConfig.author} <span class="text-[var(--color-accent)] print:text-emerald-700">({siteConfig.handle})</span>
+          </h2>
+          <p class="text-sm font-mono text-[var(--color-accent-2)] print:text-blue-700 mt-1 font-semibold">
+            Cybersecurity Researcher • Reverse Engineering & Digital Forensics
+          </p>
+        </div>
+        <div class="text-xs font-mono text-[var(--color-text-muted)] print:text-slate-600 sm:text-right space-y-0.5">
+          <div>{siteConfig.location}</div>
+          <div>{siteConfig.email}</div>
+          <div>github.com/FAZer0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Education -->
+    <section class="space-y-4">
+      <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] print:text-black border-b border-[var(--color-border)] print:border-black/20 pb-1">
+        Education
+      </h3>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+        <div>
+          <h4 class="font-mono text-sm font-bold text-[var(--color-text)] print:text-black">
+            Universitas Brawijaya
+          </h4>
+          <p class="text-xs text-[var(--color-text-muted)] print:text-slate-600">
+            Bachelor of Computer Science (S.Kom) in Teknik Informatika (Informatics Engineering)
+          </p>
+        </div>
+        <div class="text-xs font-mono text-[var(--color-text-dim)] print:text-slate-500">
+          2024 – Present (3rd Semester)
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Competencies -->
+    <section class="space-y-4">
+      <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] print:text-black border-b border-[var(--color-border)] print:border-black/20 pb-1">
+        Technical Skills
+      </h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+        <div>
+          <strong class="text-[var(--color-text)] print:text-black block">Reverse Engineering (Primary):</strong>
+          <span class="text-[var(--color-text-muted)] print:text-slate-700">
+            Ghidra, GDB, x64dbg, r2 (radare2), pycdc, Android Studio
+          </span>
+        </div>
+        <div>
+          <strong class="text-[var(--color-text)] print:text-black block">Digital Forensics (Secondary):</strong>
+          <span class="text-[var(--color-text-muted)] print:text-slate-700">
+            FTK Imager, Autopsy, Wireshark, binwalk, ExifTool, Steganography, Eric Zimmerman Tools
+          </span>
+        </div>
+        <div>
+          <strong class="text-[var(--color-text)] print:text-black block">Programming & Core Tools:</strong>
+          <span class="text-[var(--color-text-muted)] print:text-slate-700">
+            C/C++, Python 3, x86/x64 Assembly, Bash, Java
+          </span>
+        </div>
+        <div>
+          <strong class="text-[var(--color-text)] print:text-black block">System & Infrastructure:</strong>
+          <span class="text-[var(--color-text-muted)] print:text-slate-700">
+            Linux, Docker, Git, VMware
+          </span>
+        </div>
+        <div class="sm:col-span-2">
+          <strong class="text-[var(--color-text)] print:text-black block">Progress Belajar:</strong>
+          <span class="text-[var(--color-text-muted)] print:text-slate-700">
+            Kotlin, Rust, Flutter, Jaringan Komputer, Cloud Computing
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTF Achievements -->
+    <section class="space-y-4">
+      <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] print:text-black border-b border-[var(--color-border)] print:border-black/20 pb-1">
+        Selected CTF Achievements
+      </h3>
+      <ul class="space-y-3 text-xs font-mono">
+        <li class="border-l-2 border-[var(--color-accent)]/60 pl-3">
+          <div class="flex items-center justify-between">
+            <strong class="text-[var(--color-text)] print:text-black">Cyber Jawara National CTF 2025</strong>
+            <span class="text-[var(--color-accent)] print:text-emerald-700 font-bold">Rank 12 / 180</span>
+          </div>
+          <p class="text-[var(--color-text-muted)] print:text-slate-600 mt-0.5">
+            Team BrawijayaCyber. Solved all Reverse Engineering binaries up to 450 points including custom VM bytecode challenge.
+          </p>
+        </li>
+        <li class="border-l-2 border-[var(--color-accent)]/60 pl-3">
+          <div class="flex items-center justify-between">
+            <strong class="text-[var(--color-text)] print:text-black">Wargame Sandbox Quals 2025</strong>
+            <span class="text-[var(--color-accent)] print:text-emerald-700 font-bold">Rank 5 / 95 (First Blood)</span>
+          </div>
+          <p class="text-[var(--color-text-muted)] print:text-slate-600 mt-0.5">
+            Achieved First Blood on Windows x64 malware stager unpacking and PEB traversal analysis.
+          </p>
+        </li>
+        <li class="border-l-2 border-[var(--color-accent)]/60 pl-3">
+          <div class="flex items-center justify-between">
+            <strong class="text-[var(--color-text)] print:text-black">Gemastik XVII Cybersecurity Division 2024</strong>
+            <span class="text-[var(--color-accent)] print:text-emerald-700 font-bold">National Finalist (Rank 8)</span>
+          </div>
+          <p class="text-[var(--color-text-muted)] print:text-slate-600 mt-0.5">
+            National student informatics championship. Analyzed Linux LKM rootkits and extracted memory dump artifacts with Volatility 3.
+          </p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Key Projects -->
+    <section class="space-y-4">
+      <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] print:text-black border-b border-[var(--color-border)] print:border-black/20 pb-1">
+        Security Projects
+      </h3>
+      <div class="space-y-3 text-xs font-mono">
+        <div>
+          <div class="flex items-center justify-between">
+            <strong class="text-[var(--color-text)] print:text-black">DecompHelper — Ghidra Struct Recovery Automation</strong>
+            <span class="text-[var(--color-text-dim)] print:text-slate-500">Python / Ghidra API</span>
+          </div>
+          <p class="text-[var(--color-text-muted)] print:text-slate-600 mt-0.5">
+            Headless Ghidra script and plugin that reconstructs C structs and calculates field offsets from pointer arithmetic.
+          </p>
+        </div>
+        <div>
+          <div class="flex items-center justify-between">
+            <strong class="text-[var(--color-text)] print:text-black">MemArtifacts — Volatility Triage CLI</strong>
+            <span class="text-[var(--color-text-dim)] print:text-slate-500">Python / Volatility 3</span>
+          </div>
+          <p class="text-[var(--color-text-muted)] print:text-slate-600 mt-0.5">
+            Automated forensics triage tool that scores process anomalies and flags unlinked kernel modules.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
