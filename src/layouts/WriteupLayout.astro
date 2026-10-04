@@ -1,5 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import { withBase } from '../data/paths';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -57,7 +58,7 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
   <!-- Back to Writeups Link -->
   <div class="mb-6">
     <a
-      href="/writeups"
+      href={withBase('/writeups')}
       class="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
     >
       <span>&larr;</span>
@@ -130,7 +131,7 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
         <div class="flex flex-wrap gap-2">
           {tags.map((tag) => (
             <a
-              href={`/writeups?tag=${encodeURIComponent(tag)}`}
+              href={withBase(`/writeups?tag=${encodeURIComponent(tag)}`)}
               class="px-2.5 py-1 text-xs font-mono rounded bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
             >
               #{tag}
@@ -143,7 +144,7 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
       <nav class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 not-prose pt-6 border-t border-[var(--color-border)]">
         {prevWriteup ? (
           <a
-            href={`/writeups/${prevWriteup.id}`}
+            href={withBase(`/writeups/${prevWriteup.id}`)}
             class="cyber-panel p-4 hover:border-[var(--color-accent)]/50 transition-all flex flex-col group"
           >
             <span class="text-[10px] font-mono text-[var(--color-text-dim)] uppercase">
@@ -159,7 +160,7 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 
         {nextWriteup ? (
           <a
-            href={`/writeups/${nextWriteup.id}`}
+            href={withBase(`/writeups/${nextWriteup.id}`)}
             class="cyber-panel p-4 hover:border-[var(--color-accent)]/50 transition-all flex flex-col text-right group sm:col-start-2"
           >
             <span class="text-[10px] font-mono text-[var(--color-text-dim)] uppercase">

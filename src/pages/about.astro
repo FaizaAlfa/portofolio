@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { skillCategories, currentlyLearning, currentlyPlaying } from '../data/skills';
 import { siteConfig } from '../data/site';
+import { withBase } from '../data/paths';
 ---
 
 <BaseLayout title="About" description="Biography, technical background, learning roadmap, and security tool matrix of Faiza (FAZer0).">
@@ -114,7 +115,7 @@ import { siteConfig } from '../data/site';
           Seeking opportunities in <strong>Malware Analysis</strong>, <strong>Vulnerability Research</strong>, <strong>Incident Response (DFIR)</strong>, and Security Engineering internships.
         </p>
         <a
-          href="/contact"
+          href={withBase('/contact')}
           class="inline-block text-xs font-mono text-[var(--color-accent)] hover:underline font-bold"
         >
           Get in touch &rarr;

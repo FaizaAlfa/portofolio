@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'preact/hooks';
+import { withBase } from '../../data/paths';
 
 export interface WriteupItem {
   id: string;
@@ -301,7 +302,7 @@ export default function WriteupFilter({ initialWriteups }: WriteupFilterProps) {
             return (
               <a
                 key={w.id}
-                href={`/writeups/${w.slug}`}
+                href={withBase(`/writeups/${w.slug}`)}
                 class="group cyber-panel p-5 flex flex-col justify-between hover:border-[var(--color-accent)]/50 transition-all duration-200 hover:-translate-y-1 block"
               >
                 <div>

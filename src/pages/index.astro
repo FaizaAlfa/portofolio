@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { skillCategories } from '../data/skills';
 import { siteConfig } from '../data/site';
+import { withBase } from '../data/paths';
 
 // Fetch non-draft writeups
 const writeups = await getCollection('writeups', ({ data }) => !data.draft);
@@ -43,13 +44,13 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.
       <!-- Quick CTAs -->
       <div class="pt-4 flex flex-wrap items-center gap-3 font-mono text-xs sm:text-sm">
         <a
-          href="/writeups"
+          href={withBase('/writeups')}
           class="px-4 py-2 bg-[var(--color-accent)] hover:bg-[var(--color-accent)]/90 text-[#0b0f14] font-bold rounded transition-colors shadow-sm"
         >
           [ Lihat Writeups &rarr; ]
         </a>
         <a
-          href="/projects"
+          href={withBase('/projects')}
           class="px-4 py-2 bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] border border-[var(--color-border)] rounded transition-colors"
         >
           ./projects
@@ -177,7 +178,7 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.
       <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] uppercase tracking-wider font-bold">
         <span>// 03. PROJECTS</span>
       </div>
-      <a href="/projects" class="text-xs font-mono text-[var(--color-accent)] hover:underline">
+      <a href={withBase('/projects')} class="text-xs font-mono text-[var(--color-accent)] hover:underline">
         Lihat Semua Proyek &rarr;
       </a>
     </div>
@@ -231,7 +232,7 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.
       <div class="flex items-center gap-2 font-mono text-xs text-[var(--color-accent)] uppercase tracking-wider font-bold">
         <span>// 04. WRITEUPS</span>
       </div>
-      <a href="/writeups" class="text-xs font-mono text-[var(--color-accent)] hover:underline">
+      <a href={withBase('/writeups')} class="text-xs font-mono text-[var(--color-accent)] hover:underline">
         Buka Arsip Writeup &rarr;
       </a>
     </div>
@@ -243,7 +244,7 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
       {recentWriteups.map((w) => (
         <a
-          href={`/writeups/${w.id}`}
+          href={withBase(`/writeups/${w.id}`)}
           class="cyber-panel p-5 flex flex-col justify-between hover:border-[var(--color-accent)]/50 transition-colors block group"
         >
           <div>
@@ -314,7 +315,7 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.
             </span>
             {entry.data.writeupSlug && (
               <a
-                href={`/writeups/${entry.data.writeupSlug}`}
+                href={withBase(`/writeups/${entry.data.writeupSlug}`)}
                 class="text-[var(--color-accent)] hover:underline font-bold text-xs"
               >
                 Writeup &rarr;

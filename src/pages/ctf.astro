@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { siteConfig } from '../data/site';
+import { withBase } from '../data/paths';
 
 const ctfEntries = await getCollection('ctf');
 
@@ -189,7 +190,7 @@ const formatDate = (date: Date) => {
                   )}
                   {writeupSlug && (
                     <a
-                      href={`/writeups/${writeupSlug}`}
+                      href={withBase(`/writeups/${writeupSlug}`)}
                       class="px-2.5 py-1 rounded bg-[var(--color-accent)]/10 hover:bg-[var(--color-accent)] hover:text-[#0b0f14] text-[var(--color-accent)] border border-[var(--color-accent)]/30 font-bold inline-flex items-center gap-1.5 transition-colors"
                     >
                       <span>📄 Baca Writeup</span>
