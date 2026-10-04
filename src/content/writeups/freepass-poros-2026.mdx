@@ -1,0 +1,47 @@
+---
+title: "Freepass POROS 2026 - Comprehensive All-Categories Solving Report"
+description: "Master writeup covering all 7 categories from Freepass POROS 2026: Cloud AWS triage, advanced RSA cryptanalysis, memory packet triage, pwn, and reverse engineering."
+date: 2026-02-18
+event: "Freepass POROS 2026"
+category: "reverse"
+difficulty: "hard"
+points: 5399
+tags: ["multi-category", "binary-exploitation", "cloud-security", "cryptanalysis", "memory-forensics"]
+tools: ["GDB", "Ghidra", "Pwntools", "Volatility", "Burp Suite", "Python 3"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Overview & Scoreboard Summary
+
+**Event:** Freepass POROS 2026  
+**Player:** Fa'iza Alfagading Sofwan (FAZer0)  
+**Total Points:** 5,399 PTS  
+**Solved Categories:** Misc, Forensics, Cloud, Crypto, Reverse Engineering, Pwn, Web  
+
+---
+
+## 2. Category Highlights
+
+### Reverse Engineering: `Mathematical` & `Meja Kerja`
+- **Mathematical (493 pts):** Reversing mathematical transformation chains including modular polynomial evaluation and matrix permutations.
+- **Meja Kerja (498 pts):** Dynamic binary instrumentation tracing internal VM bytecode registers.
+
+### Forensics: `pekka crackers` & `Ekstrak Manggis`
+- **pekka crackers (499 pts):** Memory dump analysis, extracting process memory strings and reconstructing fragmented zip structures.
+
+### Cloud Security: `Frieren Beyond Journey End` (3 Stages)
+- Enumerating AWS IAM role escalation, misconfigured S3 bucket policies, and CloudTrail event telemetry.
+
+### Pwn & Web: `Larper` & `EFN / EFJ`
+- Buffer overflow with ROP chain execution returning to libc system call gadget.
+
+---
+
+## 3. Flag Showcase
+
+<Callout type="success" title="POROS Master Flag">
+  <FlagReveal flag="freepass26{m4st3r_0f_4ll_tr4d3s_s3cur1ty_ch4mp10n}" client:visible />
+</Callout>

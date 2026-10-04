@@ -14,9 +14,9 @@ const recentWriteups = writeups
 const allProjects = await getCollection('projects');
 const featuredProjects = allProjects.slice(0, 4);
 
-// Fetch CTF entries
+// Fetch CTF entries sorted chronologically
 const ctfEntries = await getCollection('ctf');
-const sortedCTF = ctfEntries.sort((a, b) => b.data.year - a.data.year);
+const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <BaseLayout>
@@ -297,17 +297,29 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.year - a.data.year);
 
     <div class="space-y-4">
       {sortedCTF.map((entry) => (
-        <div class="cyber-panel p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
+        <div class="cyber-panel p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs hover:border-[var(--color-accent)]/30 transition-colors">
           <div>
-            <span class="text-[10px] text-[var(--color-accent-2)] font-bold uppercase block">{entry.data.year}</span>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-[10px] text-[var(--color-accent-2)] font-bold uppercase">
+                {new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(entry.data.date)}
+              </span>
+            </div>
             <strong class="text-sm text-[var(--color-text)] block font-semibold">{entry.data.event}</strong>
-            <span class="text-[var(--color-text-dim)] text-[11px]">Tim: {entry.data.team} • Kategori: {entry.data.categoriesSolved.join(', ')}</span>
+            <span class="text-[var(--color-text-dim)] text-[11px]">Tim: {entry.data.team} • Solved: {entry.data.categoriesSolved.join(', ')}</span>
           </div>
 
-          <div class="shrink-0">
+          <div class="shrink-0 flex items-center gap-3">
             <span class="px-3 py-1 rounded bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/40 text-[var(--color-accent)] font-bold">
               Rank #{entry.data.rank} {entry.data.totalTeams ? `/ ${entry.data.totalTeams}` : ''}
             </span>
+            {entry.data.writeupSlug && (
+              <a
+                href={`/writeups/${entry.data.writeupSlug}`}
+                class="text-[var(--color-accent)] hover:underline font-bold text-xs"
+              >
+                Writeup &rarr;
+              </a>
+            )}
           </div>
         </div>
       ))}

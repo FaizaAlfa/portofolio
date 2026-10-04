@@ -37,11 +37,13 @@ const ctf = defineCollection({
   schema: z.object({
     event: z.string(),
     year: z.number(),
+    date: z.coerce.date(),
     team: z.string(),
     rank: z.number(),
     totalTeams: z.number().optional(),
     categoriesSolved: z.array(z.string()),
-    link: z.string().url().optional(),
+    link: z.string().optional(),
+    writeupSlug: z.string().optional(),
     featured: z.boolean().default(false),
   }),
 });

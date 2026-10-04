@@ -1,0 +1,58 @@
+---
+title: "Cyber Wave 2.0 CTF - Multi-Layer Crypto & Full Category Breakdown"
+description: "Comprehensive solutions for Cyber Wave 2.0 CTF: Matryoshka nested multi-cipher breaking, binary analysis, covert network triage, and open-source intelligence operations."
+date: 2026-05-02
+event: "Cyber Wave 2.0 CTF"
+category: "crypto"
+difficulty: "hard"
+points: 2648
+tags: ["matryoshka-encryption", "chacha20-poly1305", "pbkdf2", "osint-geoint", "reverse-engineering"]
+tools: ["Python Cryptography", "CyberChef", "Google Lens", "What3Words", "Ghidra"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Tournament Overview
+
+**Event:** Cyber Wave 2.0 CTF  
+**Date:** 2 Mei 2026  
+**Team:** `FAZer0 aishaaaursss Phya`  
+
+---
+
+## 2. Crypto: `Matryoshka Key` (250 pts)
+
+### Problem Description
+The flag was encrypted through multiple nested cryptographic layers:
+1. **Fernet (AES-128-CBC + HMAC-SHA256)** seeded with `"clockwork-doll"`
+2. **ChaCha20-Poly1305** authenticated stream cipher
+3. **AES-CBC** with PBKDF2 derived keys (250,000 iterations) using combinations of system usernames (`guest`, `backup`, `operator`, `root`, `admin`) and numeric/symbol suffixes.
+
+### Python Unwrapping Engine
+```python
+import base64
+from hashlib import sha256
+from Crypto.Cipher import AES, ChaCha20_Poly1305
+from Crypto.Protocol.KDF import PBKDF2
+from cryptography.fernet import Fernet
+
+# Iteratively peel each cryptographic envelope
+# 1. Reverse outer Fernet wrapper
+# 2. Derive PBKDF2 keys across user dictionary
+# 3. Decrypt inner ChaCha20-Poly1305 payload
+```
+
+<Callout type="success" title="Matryoshka Flag">
+  <FlagReveal flag="CYBERWAVE{m4try0shk4_d33p_n3st3d_crypt0_unr4v3l3d}" client:visible />
+</Callout>
+
+---
+
+## 3. OSINT Operations & Geointelligence
+
+The OSINT track featured 8 geolocation and digital footprint tracking tasks:
+- **Operation Deep Dive / Final Signal:** Flight telemetry tracking and ADS-B signals.
+- **Night Out / Kota:** Landmark geolocation via What3Words tri-word address matching and Google Lens multi-spectral matching.
+- **Silent Peak & Sky Watcher:** Mountain peak triangulation and meteorological camera cross-referencing.

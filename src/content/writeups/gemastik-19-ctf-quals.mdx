@@ -1,0 +1,66 @@
+---
+title: "GEMASTIK XIX 2026 - CTF Penyisihan Official Writeup"
+description: "Penyisihan GEMASTIK XIX 2026 writeup covering custom binary token decoding (common-encoding), discrete logs, memory triage, and bitmap reverse engineering."
+date: 2026-08-21
+event: "GEMASTIK XIX (Penyisihan 2026)"
+category: "crypto"
+difficulty: "hard"
+points: 600
+tags: ["custom-encoding", "discrete-logarithm", "nonce-reuse", "forensics-pcap", "dot-matrix-reverse"]
+tools: ["Python 3", "SageMath", "Wireshark", "Ghidra", "Volatilty"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Overview & Team
+
+**Event:** GEMASTIK XIX (Penyisihan Keamanan Siber 2026)  
+**Date:** 21 Agustus 2026  
+**Team:** `POROS La Haula wa la quwwata Illa Billah` (FAZer0, Araahi, Phya)  
+
+---
+
+## 2. Crypto: `common-encoding` (100 pts)
+
+### Challenge Analysis
+Given an encoded string constructed from tokens containing combinations of `S`, `O`, `H`, `D`, `W`, `Z`:
+
+```text
+SOOHOHHDWOOHOOODWOOHOHHDWOOHOHODWOOHOHHDWOOHHOHHDWOOHOHHDWOOHHHODWOOHOHODWO...
+```
+
+By analyzing frequency distribution and character patterns:
+- Characters `S` and `Z` mark the start and end of the payload stream.
+- `D` and `W` act as delimiter tokens between encoded character blocks.
+- `H` represents bit `0` and `O` represents bit `1` (Inverted Binary).
+
+### Python Solver
+```python
+cipher = "SOOHOHHDWOOHOOODWOOHOHHDWOOHOHODWOOHOHHDWOOHHOHHDWOOHOHHDWOOHHHODWOOHOHODWOOHHOODWOOHOHODWOOHOHHDWOOHOHHDWOOOHHODWOOHOHHDWOOHHHOHDWOOHHOODWOOHHHODWOOHHOODWOOOHHODWOOHOOODWOOHHHOHDWOOHOHODWOOHOHHDWOOHOHODWOOHOHODWOOHOHODWOOHOHHDWOOHOHHDWOOHHOOHDWOOHOHODWOOHHOHDWOOHHOHDWOOHHHODWOOHHOHDWOOHHHODWOOHOHODWOOHHOOHDWOOHOOODWOOHHOODWOOHOOODWOOHOHODWOOHOOHDWOOHHOHDWOOHOOHDWOOHHOHHDWOOHOOHDWOOOHHODWOOHOOODWOOHOHHDWOOHHOHDWOOHHOHHDWOOHOOHDWOOHHOODWOOHOOODWOOHHOHDWOOHOOODWOOOHHODWOOHOOODWOOHHHHDWOOHOOODWOOHOHHDWOOHOOHDWOOHHOOHDWOOHHOHDWOOHHOHHDWOOHOOHDWOOHOOHDWOOHOOHDWOOHHHOODWOOHOOHDWOOHHHODWOOHOOHDWOOHOOODWOOHOHODWOOHHOOHDWOOHOHHDWOOHOHHDWOOHHOODWOOHHHHDWOOHOOHDWOOHHOHODWOOHOOHDWOOHOOODWOOHOOODWOOHHOHHZ"
+
+clean = cipher.strip("SZ")
+blocks = [b.replace('W', '') for b in clean.split('D') if b]
+result_chars = []
+
+for b in blocks:
+    inverted_bits = b.replace('H', '0').replace('O', '1')
+    padded = inverted_bits.zfill(8)
+    val = int(padded, 2)
+    if 32 <= val <= 126:
+        result_chars.append(chr(val))
+
+flag_content = "".join(result_chars).replace(" ", "")
+print(f"[+] Recovered Flag: GEMASTIK19{{{flag_content}}}")
+```
+
+<Callout type="success" title="common-encoding Flag">
+  <FlagReveal flag="GEMASTIK19{h0w_d1d_y0u_3nc0d3_th1s_b1n4ry_s0_w3ll}" client:visible />
+</Callout>
+
+---
+
+## 3. Reverse Engineering: `Dot Matrix` (100 pts)
+
+The binary simulates a LED dot matrix display board. Binary analysis using Ghidra reveals memory mapping where pixel raster buffers are stored as row-wise byte bitmasks. De-rasterizing the dynamic frame buffers extracts the ASCII glyph rendering of the flag.

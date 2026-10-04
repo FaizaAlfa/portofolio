@@ -1,0 +1,67 @@
+---
+title: "TECHFEST 2026 CTF Quals - Full Team Solutions"
+description: "Walkthrough of TECHFEST 2026 Quals featuring DisplayPort raw signal packet carving (DpDp), custom cryptography vaults, and sandbox escapes."
+date: 2026-07-09
+event: "TECHFEST 2026 (Penyisihan)"
+category: "forensics"
+difficulty: "medium"
+points: 2500
+tags: ["displayport-pcap", "raw-rgb-reconstruction", "vault-heist", "reverse-engineering", "sandbox-escape"]
+tools: ["Wireshark", "Python Pillow", "NumPy", "Ghidra", "CyberChef"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Overview
+
+**Event:** CTF TECHFEST 2026 (Babak Penyisihan)  
+**Date:** 9 Juli 2026  
+**Team:** `POROS` (2byte, FAZer0, Araahi)  
+
+---
+
+## 2. Forensics: `DpDp` (DisplayPort Packet Carving)
+
+**Author:** arenaru  
+
+### Description
+> *Brian intercepted raw DisplayPort signal frames transmitted over Ethernet with protocol ID 0x1337. Reconstruct the image displayed on screen.*
+
+### Analysis & Solution
+1. Opening the PCAP capture in Wireshark shows custom Ethernet packets with EtherType `0x1337`.
+2. The initial control packet contains an ASCII header specifying image dimensions:
+   ```text
+   WIDTH=400|HEIGHT=100
+   ```
+3. Following the header, there are 100 consecutive payload streams, each carrying exactly 1,200 bytes of raw pixel data (Total data: 100 * 1200 = 120,000 bytes).
+4. Since Total Bytes = Width * Height * BytesPerPixel, we calculate:
+   - BytesPerPixel = 120,000 / (400 * 100) = 3 bytes (24-bit RGB)
+
+### Reconstruction Script
+```python
+import struct
+import numpy as np
+from PIL import Image
+
+with open('image_data.bin', 'rb') as f:
+    data = f.read()
+
+# Parse header
+header = data[:32].decode('ascii', errors='ignore')
+parts = header.split('|')
+width = int(parts[1].split('=')[1])
+height = int(parts[2].split('=')[1])
+pixel_data = data[32:]
+
+# Convert RGB byte buffer to Image
+arr = np.frombuffer(pixel_data, dtype=np.uint8).reshape((height, width, 3))
+img = Image.fromarray(arr, 'RGB')
+img.save('reconstructed_flag.png')
+print("[+] Image saved as reconstructed_flag.png")
+```
+
+<Callout type="success" title="DpDp Flag">
+  <FlagReveal flag="TECHFEST2026{d1spl4y_p0rt_r4w_fr4m3_c4rv3d_succ3ss}" client:visible />
+</Callout>

@@ -1,0 +1,88 @@
+---
+title: "CODEX CTF 2025 - Multi-Discipline Security Walkthrough"
+description: "Solutions for CODEX CTF 2025: Hastad's broadcast attack with CRT (e=3), parallelized 24-bit keystream search, and dynamic core dump memory analysis."
+date: 2025-11-15
+event: "CODEX CTF 2025"
+category: "crypto"
+difficulty: "medium"
+points: 1850
+tags: ["hastad-broadcast-attack", "chinese-remainder-theorem", "multiprocessing-keystream", "rot47", "core-dump-analysis"]
+tools: ["Python gmpy2", "Multiprocessing", "Foremost", "Gcore", "CyberChef", "Tor Browser"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Overview
+
+**Event:** CODEX CTF 2025  
+**Date:** 15 November 2025  
+**Author:** Fa'iza Alfagading Sofwan (FAZer0)  
+
+---
+
+## 2. Crypto: `The Tiny Exponent Incident` (Hastad's Broadcast Attack)
+
+### Vulnerability Analysis
+The challenge supplies 3 RSA ciphertexts (`c1, c2, c3`) corresponding to 3 distinct moduli (`n1, n2, n3`) with the same public exponent `e = 3`.
+
+According to **Hastad's Broadcast Theorem**, by applying the **Chinese Remainder Theorem (CRT)** across pairwise coprime moduli `n1, n2, n3`, we can solve for:
+
+```text
+C = m^3 mod (n1 * n2 * n3)
+```
+
+Since `m < n_i` for all `i`, `m^3 < n1 * n2 * n3`, allowing us to extract the integer cube root of `C` directly over integers Z without modular reduction.
+
+### Python Solver with gmpy2
+```python
+import gmpy2
+from Crypto.Util.number import long_to_bytes
+from functools import reduce
+
+e = 3
+c_list = [c1, c2, c3]
+n_list = [n1, n2, n3]
+
+def chinese_remainder_theorem(c, n):
+    prod = reduce(lambda a, b: a * b, n)
+    total = 0
+    for c_i, n_i in zip(c, n):
+        p = prod // n_i
+        total += c_i * int(gmpy2.invert(p, n_i)) * p
+    return total % prod
+
+crt_val = chinese_remainder_theorem(c_list, n_list)
+m, exact = gmpy2.iroot(crt_val, e)
+
+if exact:
+    flag = long_to_bytes(int(m)).decode()
+    print(f"[+] Recovered Flag: {flag}")
+```
+
+<Callout type="success" title="Crypto Flag">
+  <FlagReveal flag="CODEX{R54_e3_74NpA_pAdd1N9_YaN9_b354r???!!!_w4H_17U_k4caU_s1h_Ju7Ur_KAc4u_SiH}" client:visible />
+</Callout>
+
+---
+
+## 3. Reverse: `The Packed Grimoire`
+
+The binary was packed to obscure the static flag comparison logic. By launching the process dynamically under Linux and dumping memory structures via GDB core dump utilities:
+
+```bash
+# 1. Start process in background
+./chall &
+PID=$!
+
+# 2. Inspect memory mapping and dump memory core
+sudo gcore -o core_dump $PID
+
+# 3. Extract flag strings from memory
+strings core_dump.$PID | grep -E "CODEX\{.*\}|flag\{.*\}"
+```
+
+<Callout type="success" title="Reverse Flag">
+  <FlagReveal flag="CODEX{S1mPl3_fl4G_ch3ckEr_4nD_p4ck3Rs5S5s!!!0_o!!!}" client:visible />
+</Callout>

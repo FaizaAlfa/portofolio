@@ -1,0 +1,66 @@
+---
+title: "TECHFEST 2026 CTF Finals - VoltPN Android Malware Triage"
+description: "Dissecting an Android malware dump, decompiling APK Smali bytecode to extract AES-CBC crypto keys, and carving device metadata to unlock exfiltrated credentials."
+date: 2026-07-27
+event: "TECHFEST 2026 (Final)"
+category: "forensics"
+difficulty: "medium"
+points: 1000
+tags: ["android-malware", "apk-reverse", "smali-analysis", "file-carving", "aes-cbc"]
+tools: ["Apktool", "CyberChef", "Ghidra", "Android Triage"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Incident Scenario
+
+**Challenge Name:** VoltPN  
+**Author:** ud1n  
+**Category:** Digital Forensics / Mobile Malware  
+**Team:** `POROS` (2byte, FAZer0, Araahi)  
+**Date:** 27 Juli 2026  
+
+> *A software developer noticed rapid battery drain and abnormal overnight data spikes. Sensitive confidential files were encrypted. Analyze the Android logical dump, identify the malware, and recover the victim's data.*
+
+---
+
+## 2. Investigation & Malware Disassembly
+
+1. Extracting the Android logical dump reveals a suspicious package under `/data/data/com.voltvpn.pro`.
+2. Inside `/data/data/com.voltvpn.pro/files/`, an encrypted container `locked.enc` was found.
+3. In `/data/media/0/Download/`, we found the installer APK. Using **Apktool**, we disassembled the APK into Smali bytecode.
+4. Inspecting `smali_classes5/com/voltvpn/pro/service/NoteCryptor.smali` revealed static cryptographic material:
+   - **Transformation:** `AES/CBC/PKCS5Padding`
+   - **AES Key:** `V0ltVPN_K1C4uwWw`
+   - **AES IV:** `1a2b3c4d5e6f7890`
+
+---
+
+## 3. Decryption & Artifact Carving
+
+Decrypting `locked.enc` via AES-CBC produces a PNG image containing a Google Drive link and password clue:
+
+```text
+the zip pass is:
+mothers name_fav football club_cat name
+(all lowercase)
+```
+
+Carving deleted SMS, contacts, and note records under `/data/media/0/` gives:
+- **Mother's name:** `viona`
+- **Favorite football club:** `barcelona`
+- **Cat name:** `goolkie`
+
+Password: `viona_barcelona_goolkie`
+
+Unzipping the archive reveals the final flag.
+
+---
+
+## 4. Flag
+
+<Callout type="success" title="Final Flag">
+  <FlagReveal flag="TECHFEST2026{messi_lagi_curhat_sama_bang_dodo_nyesel_mandiin_lamine_yamal}" client:visible />
+</Callout>

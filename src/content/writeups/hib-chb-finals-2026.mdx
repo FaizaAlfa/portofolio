@@ -1,0 +1,108 @@
+---
+title: "HIB CHB Finals 2026 - Forensics & Reverse Engineering Writeup"
+description: "Solutions for HIB CHB Finals 2026: Android storage forensic triage with OpenSSL AES-256-CBC and headless Python 3.11 bytecode repair and cracking."
+date: 2026-08-16
+event: "Hack It Brawijaya (CHB Finals 2026)"
+category: "forensics"
+difficulty: "hard"
+points: 1752
+tags: ["android-forensics", "termux-triage", "aes-256-cbc", "pyc-magic-header", "pylingual", "reverse-engineering"]
+tools: ["CyberChef", "PyLingual", "HexEdit", "Python 3", "xxd"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Challenge Overview
+
+**Author:** FAZer0  
+**Event:** Hack It Brawijaya Finals 2026  
+**Date:** 16 Agustus 2026  
+
+| Category | Challenge Name | Points | Summary |
+| :--- | :--- | :--- | :--- |
+| **Forensics** | `私たちの記憶の停止` | 752 PTS | Android Termux Bash history & OpenSSL AES-256-CBC recovery |
+| **Reverse** | `Marshmallow` | 1,000 PTS | Headless PYC magic header repair & linear bitshift inversion |
+
+---
+
+## 2. Forensics: `私たちの記憶の停止` (752 pts)
+
+### Investigation
+Analyzing the Android artifact dump reveals an encrypted document `Lyra_Poros_CV.docx.Hack-It-Braw`. The Termux `.bash_history` contains the encryption script:
+
+```bash
+KEY=$(echo -n "https://open.spotify.com/playlist/7F5tC5VYL5Pj075kBaQM1b?si=r84XWSPMRk-T0A5-MHXVoA" | sha256sum | cut -d' ' -f1)
+IV=$(echo -n "Is it painful to be the person who waits? Or is it more painful to be the person who makes others wait? Either way, there's no need to wait anymore. That's what is most painful." | sha256sum | cut -d' ' -f1 | head -c 32)
+SALT="KIIRO"
+
+encrypt_file() {
+    local file="$1"
+    local out_file="$file.Hack-It-Braw"
+    {
+        echo "${SALT}"
+        openssl enc -aes-256-cbc -K "$KEY" -iv "$IV" -nosalt -in "$file" 2>/dev/null
+    } > "$out_file"
+    rm -f "$file"
+}
+```
+
+### Decryption Parameters
+- **KEY (Hex):** `60319782eba030d4a2f7f4fcf60e664e68bfa41f4ed2d22655e0512b76f79356`
+- **IV (Hex):** `e14932e40402d141698e98c52ded6374`
+- **Pre-pended Salt:** Strip first 6 bytes (`KIIRO\n`) from the ciphertext before performing AES-256-CBC decryption in CyberChef.
+
+<Callout type="success" title="Forensics Flag">
+  <FlagReveal flag="HIBCHB26{maybe_in_another_life_i_have_the_guts_to_tell_her_not_picture_it_in_chall_that _i've_made}" client:visible />
+</Callout>
+
+---
+
+## 3. Reverse: `Marshmallow` (1,000 pts)
+
+### Investigation & Header Repair
+Given `marshmallow.pyc` with missing magic header bytes. Inspecting with `xxd` shows zeroed header offsets.
+1. Adding Python 3.11 standard magic number header `a7 0d 0d 0a 00 00 00 00 00 00 00 00 00 00 00 00`.
+2. Decompiling via PyLingual recovers the core validation routine:
+
+```python
+import sys
+
+KEY = b't04st3d'
+TARGET = b'\xe1\xd2\xc1\x96\xfd\xae\xdcC\x92!HO\x0e\x15\x92K\xa8w\xb6\xe8,\xfb4\xfc\xa8\xaf\xc6\xfd\x84F\xd4\xf3\xe2\xe9n-w\x05\xe2K{/\xe6M\xce\xab'
+
+def toast(candidate):
+    out = []
+    for i, ch in enumerate(candidate):
+        x = ord(ch)
+        x ^= KEY[i % len(KEY)]
+        x = ((x << 3) | (x >> 5)) & 255
+        x = (x + i * 7) & 255
+        out.append(x)
+    return bytes(out)
+```
+
+### Solver / Inversion Script
+Since each character is transformed independently without cross-character state, we can directly invert the bit operations or brute-force character-by-character:
+
+```python
+KEY = b't04st3d'
+TARGET = b'\xe1\xd2\xc1\x96\xfd\xae\xdcC\x92!HO\x0e\x15\x92K\xa8w\xb6\xe8,\xfb4\xfc\xa8\xaf\xc6\xfd\x84F\xd4\xf3\xe2\xe9n-w\x05\xe2K{/\xe6M\xce\xab'
+
+flag = []
+for i, target_byte in enumerate(TARGET):
+    # Invert (x + i*7) & 255
+    x = (target_byte - i * 7) & 255
+    # Invert bit rotate left 3 -> rotate right 3
+    x = ((x >> 3) | (x << 5)) & 255
+    # Invert XOR
+    char_code = x ^ KEY[i % len(KEY)]
+    flag.append(chr(char_code))
+
+print("[+] Decrypted Flag:", "".join(flag))
+```
+
+<Callout type="success" title="Reverse Flag">
+  <FlagReveal flag="HIBCHB26{h34d3rl3ss_pyc_st1ll_t04sts_th3_fl4g}" client:visible />
+</Callout>

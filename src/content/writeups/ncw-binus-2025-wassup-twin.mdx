@@ -1,0 +1,104 @@
+---
+title: "NCW BINUS 2025 - WASSUP TWIN Cryptanalysis"
+description: "Breaking custom unpadded RSA with small twin prime modulus where message size exceeds modulus (m > N) via modular reduction recovery and prefix filtering."
+date: 2025-11-24
+event: "NCW BINUS 2025"
+category: "crypto"
+difficulty: "easy"
+points: 100
+tags: ["rsa-cryptography", "twin-prime", "unpadded-rsa", "modular-arithmetic", "brute-force-k"]
+tools: ["Python 3", "PyCryptodome", "SymPy"]
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+import FlagReveal from '../../components/islands/FlagReveal';
+
+## 1. Challenge Overview
+
+**Challenge Name:** WASSUP TWIN  
+**Author:** Auric  
+**Event:** National Cyber Week (NCW) BINUS 2025  
+**Date:** 24 November 2025  
+**Team:** `TKA LOREM IPSUM`  
+
+Given `chall.py` and `output.txt` containing RSA parameters:
+
+```text
+N = 92226959634395542727305870286691824099
+e = 65537
+c = 81028662439340068660785564873246389821
+```
+
+---
+
+## 2. Mathematical Vulnerability Analysis
+
+In standard RSA, the plaintext message `m` must satisfy `m < N`. In this challenge:
+1. `N` is generated from 64-bit twin primes (`q = p + 2`), yielding a 128-bit modulus.
+2. The flag length is 23 characters (184 bits), meaning `m > N`.
+3. When encrypting `c = m^e mod N`, the message wraps around modulus `N`. Standard decryption calculates:
+
+```text
+m_remainder = m mod N
+```
+
+The true message `m` is related to `m_remainder` by:
+
+```text
+m = k * N + m_remainder  (for integer k >= 1)
+```
+
+Since the flag starts with `NCW{` and is exactly 23 bytes long, we can bound the search space of `k` and search for ASCII printable output.
+
+---
+
+## 3. Exploit / Solver Script
+
+```python
+import math
+from Crypto.Util.number import long_to_bytes, inverse
+
+N = 92226959634395542727305870286691824099
+e = 65537
+c = 81028662439340068660785564873246389821
+
+# 1. Twin Prime Factorization
+val = math.isqrt(N + 1)
+p = val - 1
+q = val + 1
+assert p * q == N
+
+# 2. Decrypt message remainder mod N
+phi = (p - 1) * (q - 1)
+d = inverse(e, phi)
+m_remainder = pow(c, d, N)
+
+# 3. Search bounded range for k
+flag_prefix = b"NCW{"
+target_len = 23
+min_msg = int.from_bytes(flag_prefix + b'\x00' * (target_len - len(flag_prefix)), 'big')
+max_msg = int.from_bytes(flag_prefix + b'\xff' * (target_len - len(flag_prefix)), 'big')
+
+min_k = (min_msg - m_remainder) // N
+max_k = (max_msg - m_remainder) // N + 1
+
+for k in range(min_k, max_k + 2):
+    candidate_m = k * N + m_remainder
+    try:
+        candidate_bytes = long_to_bytes(candidate_m)
+        if candidate_bytes.startswith(b"NCW{") and len(candidate_bytes) == target_len:
+            if all(32 <= b <= 126 for b in candidate_bytes):
+                print(f"[+] Flag Found: {candidate_bytes.decode()}")
+                break
+    except Exception:
+        continue
+```
+
+---
+
+## 4. Flag
+
+<Callout type="success" title="Flag Capture">
+  <FlagReveal flag="NCW{its_that_easy_twin}" client:visible />
+</Callout>
