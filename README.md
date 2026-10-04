@@ -198,6 +198,13 @@ Brief tournament highlights...
 
 ## 🌐 Deployment
 
+### GitHub Pages
+1. Push to the `main` branch; `.github/workflows/deploy.yml` builds and publishes `dist` automatically.
+2. In the repository, open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**.
+3. Configure `fazer0.dev` as the custom domain in Pages and point its DNS records to GitHub Pages using GitHub's current DNS instructions. `public/CNAME` preserves the domain in each deployment.
+
+GitHub Pages does not apply `public/_headers`; the security headers defined there only work on hosts that support that file format.
+
 ### Cloudflare Pages (Recommended)
 1. Link your GitHub repository in the Cloudflare Pages Dashboard.
 2. Build Settings:
