@@ -3,8 +3,6 @@ event: "Arkavidia 10.0 CTF (Quals)"
 year: 2026
 date: 2026-02-01
 team: "KataIrfanNamaTimnyaPranowo (FAZer0, moe-shinobi-kyuun~~)"
-rank: -
-totalTeams: -
 categoriesSolved: ["Reverse Engineering", "Crypto"]
 writeupSlug: "arkavidia-10-neuralcipher"
 featured: true

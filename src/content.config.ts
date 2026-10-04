@@ -39,7 +39,7 @@ const ctf = defineCollection({
     year: z.number(),
     date: z.coerce.date(),
     team: z.string(),
-    rank: z.number(),
+    rank: z.number().optional(),
     totalTeams: z.number().optional(),
     categoriesSolved: z.array(z.string()),
     link: z.string().optional(),

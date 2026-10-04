@@ -17,7 +17,8 @@ ctfEntries.forEach((entry) => {
 });
 
 const totalEvents = ctfEntries.length;
-const topRank = Math.min(...ctfEntries.map((e) => e.data.rank));
+const rankedEntries = ctfEntries.filter((entry) => entry.data.rank !== undefined);
+const topRank = Math.min(...rankedEntries.map((entry) => entry.data.rank!));
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat('id-ID', {
@@ -159,11 +160,11 @@ const formatDate = (date: Date) => {
                   <span class={`px-3 py-1 rounded font-mono font-extrabold text-xs border ${
                     rank === 1
                       ? 'bg-amber-500/15 text-amber-400 border-amber-500/50'
-                      : rank <= 5
+                      : rank !== undefined && rank <= 5
                       ? 'bg-[var(--color-accent)]/15 text-[var(--color-accent)] border-[var(--color-accent)]/40'
                       : 'bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] border-[var(--color-border)]'
                   }`}>
-                    {rank === 1 ? '🏆 ' : ''}Rank #{rank} {totalTeams ? `/ ${totalTeams} Tim` : ''}
+                    {rank !== undefined ? `${rank === 1 ? '🏆 ' : ''}Rank #${rank}${totalTeams ? ` / ${totalTeams} Tim` : ''}` : 'Rank belum tersedia'}
                   </span>
                 </div>
               </div>

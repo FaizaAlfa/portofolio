@@ -4,7 +4,6 @@ year: 2026
 date: 2026-05-02
 team: "FAZer0 aishaaaursss Phya"
 rank: 50
-totalTeams: -
 categoriesSolved: ["Crypto", "Reverse Engineering", "Forensics", "OSINT"]
 writeupSlug: "cyber-wave-2-0"
 featured: true
