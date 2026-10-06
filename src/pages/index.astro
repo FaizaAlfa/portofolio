@@ -189,8 +189,13 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
       {featuredProjects.map((p) => (
-        <div class="cyber-panel p-5 flex flex-col justify-between">
-          <div>
+        <article class="cyber-panel relative p-5 flex flex-col justify-between hover:border-[var(--color-accent)]/50 transition-colors">
+          <a
+            href={withBase(`/projects/${p.id}`)}
+            aria-label={`Lihat detail ${p.data.title}`}
+            class="absolute inset-0 z-0 rounded"
+          />
+          <div class="relative z-10 pointer-events-none">
             <div class="flex items-center justify-between text-xs font-mono mb-2">
               <span class="text-[10px] uppercase px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold">
                 {p.data.status}
@@ -200,7 +205,7 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.
                   href={p.data.repo}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)]"
+                  class="pointer-events-auto text-[var(--color-text-muted)] hover:text-[var(--color-accent)]"
                 >
                   GitHub ↗
                 </a>
@@ -214,14 +219,7 @@ const sortedCTF = ctfEntries.sort((a, b) => b.data.date.valueOf() - a.data.date.
             </p>
           </div>
 
-          <div class="flex flex-wrap gap-1 pt-3 border-t border-[var(--color-border)]">
-            {p.data.stack.map((tech) => (
-              <span class="px-1.5 py-0.5 text-[10px] font-mono bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text-dim)] rounded">
-                {tech}
-              </span>
-            ))}
-          </div>
-        </div>
+        </article>
       ))}
     </div>
   </section>

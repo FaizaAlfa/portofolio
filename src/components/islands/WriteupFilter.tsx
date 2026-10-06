@@ -12,7 +12,6 @@ export interface WriteupItem {
   category: 'reverse' | 'forensics' | 'misc' | 'crypto' | 'web' | 'pwn';
   difficulty: 'easy' | 'medium' | 'hard' | 'insane';
   points?: number;
-  tags: string[];
   tools: string[];
 }
 
@@ -42,8 +41,6 @@ export default function WriteupFilter({ initialWriteups }: WriteupFilterProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-
   // Read initial query params from window.location on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -51,12 +48,9 @@ export default function WriteupFilter({ initialWriteups }: WriteupFilterProps) {
       const cat = params.get('category');
       const diff = params.get('difficulty');
       const q = params.get('q');
-      const tag = params.get('tag');
-
       if (cat) setSelectedCategory(cat);
       if (diff) setSelectedDifficulty(diff);
       if (q) setSearchQuery(q);
-      if (tag) setSelectedTag(tag);
     }
   }, []);
 
@@ -67,20 +61,11 @@ export default function WriteupFilter({ initialWriteups }: WriteupFilterProps) {
       if (selectedCategory !== 'all') params.set('category', selectedCategory);
       if (selectedDifficulty !== 'all') params.set('difficulty', selectedDifficulty);
       if (searchQuery.trim()) params.set('q', searchQuery.trim());
-      if (selectedTag) params.set('tag', selectedTag);
-
       const queryString = params.toString();
       const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     }
-  }, [selectedCategory, selectedDifficulty, searchQuery, selectedTag]);
-
-  // Extract all unique tags
-  const allTags = useMemo(() => {
-    const tagsSet = new Set<string>();
-    initialWriteups.forEach((w) => w.tags.forEach((t) => tagsSet.add(t)));
-    return Array.from(tagsSet);
-  }, [initialWriteups]);
+  }, [selectedCategory, selectedDifficulty, searchQuery]);
 
   // Filtered writeup collection
   const filteredWriteups = useMemo(() => {
@@ -95,34 +80,27 @@ export default function WriteupFilter({ initialWriteups }: WriteupFilterProps) {
         return false;
       }
 
-      // Tag filter
-      if (selectedTag && !item.tags.includes(selectedTag)) {
-        return false;
-      }
-
       // Search query filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const inTitle = item.title.toLowerCase().includes(query);
         const inDesc = item.description.toLowerCase().includes(query);
         const inEvent = item.event.toLowerCase().includes(query);
-        const inTags = item.tags.some((t) => t.toLowerCase().includes(query));
         const inTools = item.tools.some((t) => t.toLowerCase().includes(query));
 
-        if (!inTitle && !inDesc && !inEvent && !inTags && !inTools) {
+        if (!inTitle && !inDesc && !inEvent && !inTools) {
           return false;
         }
       }
 
       return true;
     });
-  }, [initialWriteups, selectedCategory, selectedDifficulty, selectedTag, searchQuery]);
+  }, [initialWriteups, selectedCategory, selectedDifficulty, searchQuery]);
 
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
     setSelectedDifficulty('all');
-    setSelectedTag(null);
   };
 
   const getDifficultyColor = (diff: string) => {
@@ -206,63 +184,34 @@ export default function WriteupFilter({ initialWriteups }: WriteupFilterProps) {
           </div>
         </div>
 
-        {/* Difficulties & Tags Row */}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-[var(--color-border)]">
-          {/* Difficulties */}
-          <div class="space-y-2">
-            <div class="text-xs font-mono uppercase tracking-wider text-[var(--color-text-muted)] font-semibold">
-              Difficulty
-            </div>
-            <div class="flex flex-wrap gap-1.5">
-              {DIFFICULTIES.map((diff) => {
-                const isActive = selectedDifficulty === diff.id;
-                return (
-                  <button
-                    key={diff.id}
-                    type="button"
-                    onClick={() => setSelectedDifficulty(diff.id)}
-                    class={`px-2.5 py-1 text-xs font-mono rounded border transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-[var(--color-accent-2)] text-[#0b0f14] border-[var(--color-accent-2)] font-bold'
-                        : 'bg-[var(--color-surface-hover)] border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
-                    }`}
-                  >
-                    {diff.label}
-                  </button>
-                );
-              })}
-            </div>
+        {/* Difficulty Filter */}
+        <div class="space-y-2 pt-2 border-t border-[var(--color-border)]">
+          <div class="text-xs font-mono uppercase tracking-wider text-[var(--color-text-muted)] font-semibold">
+            Difficulty
           </div>
-
-          {/* Tags */}
-          <div class="space-y-2">
-            <div class="text-xs font-mono uppercase tracking-wider text-[var(--color-text-muted)] font-semibold">
-              Tags & Techniques
-            </div>
-            <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
-              {allTags.map((t) => {
-                const isActive = selectedTag === t;
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setSelectedTag(isActive ? null : t)}
-                    class={`px-2 py-0.5 text-[11px] font-mono rounded border transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-[var(--color-accent)]/20 border-[var(--color-accent)] text-[var(--color-accent)] font-semibold'
-                        : 'bg-[var(--color-bg)] border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-accent)]/40'
-                    }`}
-                  >
-                    #{t}
-                  </button>
-                );
-              })}
-            </div>
+          <div class="flex flex-wrap gap-1.5">
+            {DIFFICULTIES.map((diff) => {
+              const isActive = selectedDifficulty === diff.id;
+              return (
+                <button
+                  key={diff.id}
+                  type="button"
+                  onClick={() => setSelectedDifficulty(diff.id)}
+                  class={`px-2.5 py-1 text-xs font-mono rounded border transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-[var(--color-accent-2)] text-[#0b0f14] border-[var(--color-accent-2)] font-bold'
+                      : 'bg-[var(--color-surface-hover)] border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
+                  }`}
+                >
+                  {diff.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Active Filter Summary Bar */}
-        {(selectedCategory !== 'all' || selectedDifficulty !== 'all' || selectedTag || searchQuery) && (
+        {(selectedCategory !== 'all' || selectedDifficulty !== 'all' || searchQuery) && (
           <div class="flex items-center justify-between pt-3 border-t border-[var(--color-border)] text-xs font-mono">
             <span class="text-[var(--color-text-muted)]">
               Showing <strong class="text-[var(--color-accent)]">{filteredWriteups.length}</strong> of {initialWriteups.length} writeups
@@ -283,7 +232,7 @@ export default function WriteupFilter({ initialWriteups }: WriteupFilterProps) {
         <div class="cyber-panel p-12 text-center space-y-3">
           <div class="text-3xl font-mono text-[var(--color-text-dim)]">[!] NO_RESULTS</div>
           <p class="text-sm text-[var(--color-text-muted)] max-w-md mx-auto">
-            No CTF writeups matched your current search filters. Try broadening your query or clearing active tags.
+            No CTF writeups matched your current search filters. Try broadening your query or clearing filters.
           </p>
           <button
             type="button"

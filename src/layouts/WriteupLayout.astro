@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { writeup, headings, prevWriteup, nextWriteup, readTime } = Astro.props;
-const { title, description, date, event, category, difficulty, points, tags, tools } = writeup.data;
+const { title, description, date, event, category, difficulty, points, tools } = writeup.data;
 
 const formattedDate = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
@@ -122,23 +122,6 @@ const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
     <!-- Main Article Body -->
     <article class="lg:col-span-8 xl:col-span-9 prose max-w-none">
       <slot />
-
-      <!-- Tags list at end of article -->
-      <div class="mt-12 pt-6 border-t border-[var(--color-border)] not-prose">
-        <div class="text-xs font-mono text-[var(--color-text-dim)] uppercase font-semibold mb-2">
-          Techniques & Tags
-        </div>
-        <div class="flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <a
-              href={withBase(`/writeups?tag=${encodeURIComponent(tag)}`)}
-              class="px-2.5 py-1 text-xs font-mono rounded bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
-            >
-              #{tag}
-            </a>
-          ))}
-        </div>
-      </div>
 
       <!-- Prev / Next Navigation -->
       <nav class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 not-prose pt-6 border-t border-[var(--color-border)]">

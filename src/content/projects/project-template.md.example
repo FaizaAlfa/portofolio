@@ -1,0 +1,25 @@
+---
+title: "Template: Nama Proyek / Tool Security Anda"
+description: "Deskripsi singkat tentang fungsionalitas tool, plugin, atau script keamanan yang Anda bangun."
+stack: ["Python", "Ghidra API", "C/C++", "Linux"]
+repo: "https://github.com/FAZer0/nama-repo"
+demo: "https://demo-link-opsional.com"
+featured: true
+status: "active" # Pilihan status: active | wip | archived
+---
+
+### Deskripsi Proyek
+Tuliskan penjelasan lengkap mengenai arsitektur, masalah yang diselesaikan, dan fitur utama dari proyek keamanan atau tool ini.
+
+### Fitur Utama
+- Fitur 1: Penjelasan kemampuan otomasi atau analisis.
+- Fitur 2: Integrasi dengan framework atau decompiler (Ghidra, Volatility, dll).
+- Fitur 3: Dukungan multi-platform atau CLI yang ringan.
+
+### Cara Penggunaan
+```bash
+# Clone dan jalankan tool
+git clone https://github.com/FAZer0/nama-repo.git
+cd nama-repo
+python3 main.py --help
+```

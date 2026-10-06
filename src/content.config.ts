@@ -27,6 +27,8 @@ const projects = defineCollection({
     stack: z.array(z.string()),
     repo: z.string().url().optional(),
     demo: z.string().url().optional(),
+    challenge: z.string().optional(),
+    challengeLabel: z.string().optional(),
     featured: z.boolean().default(false),
     status: z.enum(['active', 'archived', 'wip']),
   }),

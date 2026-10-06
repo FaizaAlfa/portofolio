@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { withBase } from '../data/paths';
 
 const projects = await getCollection('projects');
 
@@ -34,12 +35,17 @@ const getStatusBadge = (status: string) => {
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     {projects.map((project) => {
-      const { title, description, stack, repo, demo, status } = project.data;
+      const { title, description, repo, demo, status } = project.data;
       const statusClass = getStatusBadge(status);
 
       return (
-        <div class="cyber-panel p-6 flex flex-col justify-between hover:border-[var(--color-accent)]/50 transition-colors">
-          <div>
+        <article class="cyber-panel relative p-6 flex flex-col justify-between hover:border-[var(--color-accent)]/50 transition-colors">
+          <a
+            href={withBase(`/projects/${project.id}`)}
+            aria-label={`Lihat detail ${title}`}
+            class="absolute inset-0 z-0 rounded"
+          />
+          <div class="relative z-10 pointer-events-none">
             <div class="flex items-center justify-between gap-2 mb-3">
               <span class={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded border ${statusClass}`}>
                 {status}
@@ -51,7 +57,7 @@ const getStatusBadge = (status: string) => {
                     href={repo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+                    class="pointer-events-auto text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
                   >
                     GitHub ↗
                   </a>
@@ -61,7 +67,7 @@ const getStatusBadge = (status: string) => {
                     href={demo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-[var(--color-accent-2)] hover:underline"
+                    class="pointer-events-auto text-[var(--color-accent-2)] hover:underline"
                   >
                     Demo ↗
                   </a>
@@ -78,16 +84,7 @@ const getStatusBadge = (status: string) => {
             </p>
           </div>
 
-          <div>
-            <div class="flex flex-wrap gap-1.5 pt-4 border-t border-[var(--color-border)]">
-              {stack.map((tech) => (
-                <span class="px-2 py-0.5 text-[10px] font-mono rounded bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text-dim)]">
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+        </article>
       );
     })}
   </div>
